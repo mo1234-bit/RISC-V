@@ -1,10 +1,9 @@
 module memory_cycle(clk, rst, RegWriteM, MemWriteM, ResultSrcM, RD_M, PCPlus4M, WriteDataM, 
-    ALU_ResultM, RegWriteW, ResultSrcW,valid, RD_W, PCPlus4W, ALU_ResultW, ReadDataW,o_p_waitrequest);
+    ALU_ResultM, RegWriteW, ResultSrcW, RD_W, PCPlus4W, ALU_ResultW, ReadDataW,o_p_waitrequest);
     
     input clk, rst, RegWriteM, MemWriteM, ResultSrcM;
     input [4:0] RD_M; 
     input [31:0] PCPlus4M, WriteDataM, ALU_ResultM;
-     input valid;
     output RegWriteW, ResultSrcW; 
     output [4:0] RD_W;
     output [31:0] PCPlus4W, ALU_ResultW, ReadDataW;
@@ -24,10 +23,8 @@ module memory_cycle(clk, rst, RegWriteM, MemWriteM, ResultSrcM, RD_M, PCPlus4M, 
 
           wire   [25:0]  o_m_addr;
           wire   [3:0]  o_m_byte_en;
-          wire   [127:0]  o_m_writedata;
           wire     o_m_read;
           wire     o_m_write;
-          wire    [127:0] i_m_readdata;
           wire     i_m_readdata_valid;
           wire     i_m_waitrequest;
 
@@ -42,12 +39,13 @@ module memory_cycle(clk, rst, RegWriteM, MemWriteM, ResultSrcM, RD_M, PCPlus4M, 
           assign i_p_read=(MemWriteM==0);
           assign i_p_writedata=WriteDataM;
           assign {rs2,rs1}=ALU_ResultM[11:2];
-
+          wire [31:0]data_out;
+          wire[31:0]data_in;
           address dut1(
      MemWriteM,
      clk,    
      rst_n,  
-    valid,  
+    (i_p_write||i_p_read),  
     rs1,
     rs2,
     i_p_addr,
@@ -66,10 +64,10 @@ module memory_cycle(clk, rst, RegWriteM, MemWriteM, ResultSrcM, RD_M, PCPlus4M, 
                o_p_waitrequest,
                o_m_addr,
                o_m_byte_en,
-               o_m_writedata,
+               data_in,
                o_m_read,
                o_m_write,
-               i_m_readdata,
+               data_out,
                i_m_readdata_valid,
                i_m_waitrequest,
                cnt_r,
@@ -78,18 +76,16 @@ module memory_cycle(clk, rst, RegWriteM, MemWriteM, ResultSrcM, RD_M, PCPlus4M, 
                cnt_hit_w,
                cnt_wb_r,
                cnt_wb_w);
-
-
     Data_Memory dmem (
                         .clk(clk),
                         .rst(rst),
                         .WE(o_m_write),
-                        .WD(WriteDataM),
+                        .WD(data_in),
                         .i_m_readdata_valid(i_m_readdata_valid),
                         .i_m_waitrequest(i_m_waitrequest),
                         .ren(o_m_read),
                         .A(ALU_ResultM),
-                        .RD(i_m_readdata)
+                        .RD(data_out)
                     );
 
     always @(posedge clk or negedge rst) begin
