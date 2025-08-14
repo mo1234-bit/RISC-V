@@ -29,7 +29,8 @@ module fetch_cycle(clk, rst, PCSrcE, PCTargetE, InstrD, PCD, PCPlus4D,o_p_waitre
     Instruction_Memory IMEM (
                 .rst(rst),
                 .A(PCF),
-                .RD(InstrF)
+                .RD(InstrF),
+                .o_p_waitrequest(o_p_waitrequest)
                 );
 
     PC_Adder PC_adder (
