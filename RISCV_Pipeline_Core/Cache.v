@@ -37,9 +37,9 @@
 
     output reg [25:0]  o_m_addr;
     output wire [3:0]  o_m_byte_en;
-    output reg [127:0] o_m_writedata;
+    output reg [31:0] o_m_writedata;
     output reg         o_m_read, o_m_write;
-    input wire [127:0] i_m_readdata;
+    input wire [31:0] i_m_readdata;
     input wire         i_m_readdata_valid;
     input wire         i_m_waitrequest;
 
@@ -54,8 +54,8 @@
     wire [3:0]    modify;
     wire [3:0]    miss;
     wire [3:0]    valid;
-    wire [127:0]  readdata0, readdata1, readdata2, readdata3;
-    wire [127:0]  writedata;
+    wire [31:0]  readdata0, readdata1, readdata2, readdata3;
+    wire [31:0]  writedata;
     wire          write0, write1, write2, write3;
     wire [3:0]    word_en;
     wire [3:0] 	  byte_en;
@@ -65,7 +65,7 @@
     wire [1:0] 	  hit_num;
 
     reg  [2:0] 	  state;
-    reg  [127:0]  writedata_buf;
+    reg  [31:0]  writedata_buf;
     reg  [24:0]   write_addr_buf;
     reg  [3:0] 	  byte_en_buf;
     reg 		  write_buf, read_buf;
@@ -83,7 +83,7 @@
     localparam WB2 = 6;
 
 
-
+`ifdef SIM
     integer i;
     
     initial begin
@@ -91,6 +91,7 @@
 	        ram_hot.mem[i] = 0;
         end
     end
+	  `endif
 
 
     simple_ram #(.width(8), .widthad(cache_entry)) ram_hot(clk, addr[cache_entry-1:0], w_cm, w_cm_data, addr[cache_entry-1:0], r_cm_data);
@@ -223,12 +224,8 @@
                                      (r_cm_data[5:4] == hit_num) ? {r_cm_data[5:4], r_cm_data[7:6], r_cm_data[3:0]} : r_cm_data;
                         w_cm <= 1;
                     end else if((|hit) && read_buf) begin
-                        case(write_addr_buf[1:0])
-                            2'b00: o_p_readdata <= (hit[0]) ? readdata0[31:0] : (hit[1]) ? readdata1[31:0] : (hit[2]) ? readdata2[31:0] : readdata3[31:0];
-                            2'b01: o_p_readdata <= (hit[0]) ? readdata0[63:32] : (hit[1]) ? readdata1[63:32] : (hit[2]) ? readdata2[63:32] : readdata3[63:32];
-                            2'b10: o_p_readdata <= (hit[0]) ? readdata0[95:64] : (hit[1]) ? readdata1[95:64] : (hit[2]) ? readdata2[95:64] : readdata3[95:64];
-                            2'b11: o_p_readdata <= (hit[0]) ? readdata0[127:96] : (hit[1]) ? readdata1[127:96] : (hit[2]) ? readdata2[127:96] : readdata3[127:96];
-                        endcase
+                         o_p_readdata <= (hit[0]) ? readdata0[31:0] : (hit[1]) ? readdata1[31:0] : (hit[2]) ? readdata2[31:0] : readdata3[31:0];
+                        
                         o_p_readdata_valid <= 1;
                         w_cm_data <= (r_cm_data[1:0] == hit_num) ? {r_cm_data[1:0], r_cm_data[7:2]} :
                                      (r_cm_data[3:2] == hit_num) ? {r_cm_data[3:2], r_cm_data[7:4], r_cm_data[1:0]} :
@@ -300,12 +297,9 @@
 		                end else if(read_buf) begin
                             state <= IDLE;
 		                    o_p_readdata_valid <= 1;
-		                    case(write_addr_buf[1:0])
-		                        2'b00: o_p_readdata <= i_m_readdata[ 31: 0];
-		                        2'b01: o_p_readdata <= i_m_readdata[ 63:32];
-		                        2'b10: o_p_readdata <= i_m_readdata[ 95:64];
-		                        2'b11: o_p_readdata <= i_m_readdata[127:96];
-		                    endcase
+		                    o_p_readdata <= i_m_readdata[ 31: 0];
+		                      
+		           
 		                end
                     end
                     end 
@@ -361,13 +355,13 @@ module set(clk,
     input wire                    clk, rst;
     input wire [cache_entry-1:0]  entry;
     input wire [22-cache_entry:0] o_tag;
-    input wire [127:0] 		      writedata;
+    input wire [31:0] 		      writedata;
     input wire [3:0] 		      byte_en;
     input wire       	          write;
     input wire [3:0]              word_en;
     input wire 			          read_miss;
 
-    output wire [127:0] 		  readdata;
+    output wire [31:0] 		  readdata;
     output wire [22:0] 		      wb_addr;
     output wire 			      hit, modify, miss, valid;
 
@@ -384,21 +378,7 @@ module set(clk,
     assign wb_addr = {i_tag, entry};
 
     //write -> [3:0] write, writedata/readdata 32bit -> 128bit
-    simple_ram #(.width(8), .widthad(cache_entry)) ram11_3(clk, entry, write && word_en[3]  && byte_en[3], writedata[127:120], entry, readdata[127:120]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram11_2(clk, entry, write && word_en[3]  && byte_en[2], writedata[119:112], entry, readdata[119:112]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram11_1(clk, entry, write && word_en[3]  && byte_en[1], writedata[111:104], entry, readdata[111:104]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram11_0(clk, entry, write && word_en[3]  && byte_en[0], writedata[103:96], entry, readdata[103:96]);
-
-    simple_ram #(.width(8), .widthad(cache_entry)) ram10_3(clk, entry, write && word_en[2]  && byte_en[3], writedata[95:88], entry, readdata[95:88]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram10_2(clk, entry, write && word_en[2]  && byte_en[2], writedata[87:80], entry, readdata[87:80]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram10_1(clk, entry, write && word_en[2]  && byte_en[1], writedata[79:72], entry, readdata[79:72]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram10_0(clk, entry, write && word_en[2]  && byte_en[0], writedata[71:64], entry, readdata[71:64]);
-
-    simple_ram #(.width(8), .widthad(cache_entry)) ram01_3(clk, entry, write && word_en[1]  && byte_en[3], writedata[63:56], entry, readdata[63:56]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram01_2(clk, entry, write && word_en[1]  && byte_en[2], writedata[55:48], entry, readdata[55:48]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram01_1(clk, entry, write && word_en[1]  && byte_en[1], writedata[47:40], entry, readdata[47:40]);
-    simple_ram #(.width(8), .widthad(cache_entry)) ram01_0(clk, entry, write && word_en[1]  && byte_en[0], writedata[39:32], entry, readdata[39:32]);
-
+   
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_3(clk, entry, write && word_en[0]  && byte_en[3], writedata[31:24], entry, readdata[31:24]);
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_2(clk, entry, write && word_en[0]  && byte_en[2], writedata[23:16], entry, readdata[23:16]);
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_1(clk, entry, write && word_en[0]  && byte_en[1], writedata[15: 8], entry, readdata[15:8]);
@@ -409,10 +389,11 @@ module set(clk,
     simple_ram #(.width(25-cache_entry), .widthad(cache_entry)) ram_tag(clk, entry, write, write_tag_data, entry, {dirty, valid, i_tag});
 
     integer i;
-
+    `ifdef SIM 
     initial begin
         for(i = 0; i <=(2**cache_entry-1); i=i+1) begin
 	        ram_tag.mem[i] = 0;
         end
     end
+	`endif
 endmodule
