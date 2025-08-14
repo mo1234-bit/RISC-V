@@ -8,7 +8,7 @@ module PC_Module(clk,rst,PC,PC_Next);
     begin
         if(rst == 1'b0)
             PC <= 0;
-        else
+        else if (!o_p_waitrequest)
             PC <= PC_Next;
     end
 endmodule
