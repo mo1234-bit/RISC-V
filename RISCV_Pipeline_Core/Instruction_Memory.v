@@ -1,12 +1,13 @@
-module Instruction_Memory(rst,A,RD);
+module Instruction_Memory(rst,A,RD,o_p_waitrequest);
 
   input rst;
   input [31:0]A;
   output [31:0]RD;
+  input o_p_waitrequest;
 
   (* rom_style = "block" *)reg [31:0] mem [1023:0];
   
-  (* keep = "true" *) assign RD = (rst==1'b0)?32'd0: mem[A[31:2]];
+  (* keep = "true" *) assign RD = (rst==1'b0)?32'd0:(!o_p_waitrequest)?mem[A[31:2]]:RD;
 
   initial begin
     $readmemh("memfile.hex", mem);
