@@ -1,5 +1,3 @@
-
-
 module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,ResultSrcE,BranchE,
     input [2:0] ALUControlE,
     input [31:0] RD1_E, RD2_E,FRD1_E,FRD2_E, Imm_Ext_E,
@@ -19,92 +17,101 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
 
     wire [31:0] Src_A_ALU,Src_B_ALU,Src_A_FPU,Src_B_FPU, Src_B_FPU_interim,Src_B_ALU_interim;
     wire [31:0] ResultE,FResultE;
-    wire ZeroE;
+    wire ZeroE, NegativeE, OverFlowE, CarryE;
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r,ResultSrcE_r;
     reg [4:0] RD_E_r;
     reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r,FResultE_r;
-    reg  floadE_r, fstoreE_r;
-    wire [2:0]FPUControl;
-    assign FPUControl=(faddE)?3'b001:(fsubE)?3'b111:(fmulE)?3'b010:(fdivE)?3'b011:(fsqrtE)?3'b100:3'b000;
+    reg floadE_r, fstoreE_r;
+    
 
+    wire [2:0] FPUControl;
+    assign FPUControl = (faddE) ? 3'b001 :   
+                       (fsubE) ? 3'b001 :    
+                       (fmulE) ? 3'b010 :   
+                       (fdivE) ? 3'b011 :   
+                       (fsqrtE) ? 3'b100 :   
+                       3'b000;              
 
+    // Integer ALU forwarding
     Mux_3_by_1 alu_srca_mux (
-                        .a(RD1_E),
-                        .b(ResultW),
-                        .c(ALU_ResultM),
-                        .s(ForwardA_E),
-                        .d(Src_A_ALU)
-                        );
+        .a(RD1_E),
+        .b(ResultW),
+        .c(ALU_ResultM),
+        .s(ForwardA_E),
+        .d(Src_A_ALU)
+    );
 
-    // 3 by 1 Mux for Source B
     Mux_3_by_1 alu_srcb_mux (
-                        .a(RD2_E),
-                        .b(ResultW),
-                        .c(ALU_ResultM),
-                        .s(ForwardB_E),
-                        .d(Src_B_ALU_interim)
-                        );
-    // ALU Src Mux
+        .a(RD2_E),
+        .b(ResultW),
+        .c(ALU_ResultM),
+        .s(ForwardB_E),
+        .d(Src_B_ALU_interim)
+    );
+
+    
     Mux alu_src_mux (
-            .a(Src_B_ALU_interim),
-            .b(Imm_Ext_E),
-            .s(ALUSrcE),
-            .c(Src_B_ALU)
-            );
+        .a(Src_B_ALU_interim),
+        .b(Imm_Ext_E),
+        .s(ALUSrcE),
+        .c(Src_B_ALU)
+    );
 
-     Mux_3_by_1 fpu_srca_mux (
-                        .a(FRD1_E),
-                        .b(FPU_ResultW),
-                        .c(FPU_ResultEM),
-                        .s(ForwardA_E),
-                        .d(Src_A_FPU)
-                        );
+    // FPU forwarding
+    Mux_3_by_1 fpu_srca_mux (
+        .a(FRD1_E),
+        .b(FPU_ResultW),
+        .c(FPU_ResultEM),
+        .s(ForwardA_E),
+        .d(Src_A_FPU)
+    );
 
-    // 3 by 1 Mux for Source B
     Mux_3_by_1 fpu_srcb_mux (
-                        .a(FRD2_E),
-                        .b(FPU_ResultW),
-                        .c(FPU_ResultEM),
-                        .s(ForwardB_E),
-                        .d(Src_B_FPU_interim)
-                        );
+        .a(FRD2_E),
+        .b(FPU_ResultW),
+        .c(FPU_ResultEM),
+        .s(ForwardB_E),
+        .d(Src_B_FPU_interim)
+    );
+
     // FPU Src Mux
     Mux fpu_src_mux (
-            .a(Src_B_FPU_interim),
-            .b(Imm_Ext_E),
-            .s(ALUSrcE),
-            .c(Src_B_FPU)
-            );
+        .a(Src_B_FPU_interim),
+        .b(Imm_Ext_E),
+        .s(ALUSrcE),
+        .c(Src_B_FPU)
+    );
 
-    FPU fbu(
+    // FPU Unit
+    FPU fpu_unit(
         .rst_n(rst),
         .A(Src_A_FPU),
-            .B(Src_B_FPU),
-            .FResult(FResultE),
-            .FPUControl(FPUControl),
-            .stall(stall)
-            );
+        .B(fsubE ? {~Src_B_FPU[31], Src_B_FPU[30:0]} : Src_B_FPU),
+        .FResult(FResultE),
+        .FPUControl(FPUControl),
+        .stall(stall)
+    );
 
-    // ALU Unit
+
     ALU alu (
-            .A(Src_A_ALU),
-            .B(Src_B_ALU),
-            .Result(ResultE),
-            .ALUControl(ALUControlE),
-            .OverFlow(),
-            .Carry(),
-            .Zero(ZeroE),
-            .Negative()
-            );
+        .A(Src_A_ALU),
+        .B(Src_B_ALU),
+        .Result(ResultE),
+        .ALUControl(ALUControlE),
+        .OverFlow(OverFlowE),
+        .Carry(CarryE),
+        .Zero(ZeroE),
+        .Negative(NegativeE)
+    );
 
-    // Adder
+    
     PC_Adder branch_adder (
-            .a(PCE),
-            .b(Imm_Ext_E),
-            .c(PCTargetE)
-            );
+        .a(PCE),
+        .b(Imm_Ext_E),
+        .c(PCTargetE)
+    );
 
-    // Register Logic
+    
     always @(posedge clk or negedge rst) begin
         if(rst == 1'b0) begin
             RegWriteE_r <= 1'b0; 
@@ -114,28 +121,28 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
             PCPlus4E_r <= 32'h00000000; 
             RD2_E_r <= 32'h00000000; 
             ResultE_r <= 32'h00000000;
-            FRegWrite_E_r<=1'b0;
-            FResultE_r<=32'd0;
-            floadE_r<=0;
-            fstoreE_r<=0;
+            FRegWrite_E_r <= 1'b0;
+            FResultE_r <= 32'd0;
+            floadE_r <= 0;
+            fstoreE_r <= 0;
         end
-        else if(!o_p_waitrequest) begin
+        else if(!o_p_waitrequest && !stall) begin 
             RegWriteE_r <= RegWriteE; 
             MemWriteE_r <= MemWriteE; 
             ResultSrcE_r <= ResultSrcE;
             RD_E_r <= RD_E;
             PCPlus4E_r <= PCPlus4E; 
-            RD2_E_r <= (is_FOP)?Src_B_FPU_interim:Src_B_ALU_interim; 
+            RD2_E_r <= (is_FOP) ? Src_B_FPU_interim : Src_B_ALU_interim; 
             ResultE_r <= ResultE;
-            FRegWrite_E_r<=FRegWrite_E;
-            FResultE_r<=FResultE;
-            floadE_r<= floadE;
-            fstoreE_r<=fstoreE;
+            FRegWrite_E_r <= FRegWrite_E;
+            FResultE_r <= FResultE;
+            floadE_r <= floadE;
+            fstoreE_r <= fstoreE;
         end
     end
 
-    // Output Assignments
-    assign PCSrcE = ZeroE &  BranchE;
+    
+    assign PCSrcE = ZeroE & BranchE; 
     assign RegWriteM = RegWriteE_r;
     assign MemWriteM = MemWriteE_r;
     assign ResultSrcM = ResultSrcE_r;
@@ -143,10 +150,9 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     assign PCPlus4M = PCPlus4E_r;
     assign WriteDataM = RD2_E_r;
     assign ALU_ResultM = ResultE_r;
-    assign FRegWrite_M=FRegWrite_E_r;
-    assign FPU_ResultEM=FResultE_r;
-    assign floadM= floadE_r;
-    assign fstoreM= fstoreE_r;
-
+    assign FRegWrite_M = FRegWrite_E_r;
+    assign FPU_ResultEM = FResultE_r;
+    assign floadM = floadE_r;
+    assign fstoreM = fstoreE_r;
 
 endmodule
