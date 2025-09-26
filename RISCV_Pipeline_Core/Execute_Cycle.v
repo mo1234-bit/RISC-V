@@ -1,5 +1,7 @@
-module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,ResultSrcE,BranchE,
-    input [2:0] ALUControlE,
+module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,ResultSrcE,BranchE,JumpE,
+    input [3:0] ALUControlE,
+    input [2:0] funct3E,
+    input [6:0] OpE,  // Added opcode to distinguish JAL vs JALR
     input [31:0] RD1_E, RD2_E,FRD1_E,FRD2_E, Imm_Ext_E,
     input [4:0] RD_E,
     input [31:0] PCE, PCPlus4E,
@@ -18,19 +20,21 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     wire [31:0] Src_A_ALU,Src_B_ALU,Src_A_FPU,Src_B_FPU, Src_B_FPU_interim,Src_B_ALU_interim;
     wire [31:0] ResultE,FResultE;
     wire ZeroE, NegativeE, OverFlowE, CarryE;
+    wire BranchCondition;
+    wire [31:0] BranchTarget, JumpTarget;
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r,ResultSrcE_r;
     reg [4:0] RD_E_r;
     reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r,FResultE_r;
     reg floadE_r, fstoreE_r;
     
-
+    // Fixed FPU control mapping
     wire [2:0] FPUControl;
-    assign FPUControl = (faddE) ? 3'b001 :   
-                       (fsubE) ? 3'b001 :    
-                       (fmulE) ? 3'b010 :   
-                       (fdivE) ? 3'b011 :   
-                       (fsqrtE) ? 3'b100 :   
-                       3'b000;              
+    assign FPUControl = (faddE) ? 3'b001 :    // Addition
+                       (fsubE) ? 3'b001 :    // Subtraction (handled by negating B)
+                       (fmulE) ? 3'b010 :    // Multiplication  
+                       (fdivE) ? 3'b011 :    // Division
+                       (fsqrtE) ? 3'b100 :   // Square root
+                       3'b000;               // Default
 
     // Integer ALU forwarding
     Mux_3_by_1 alu_srca_mux (
@@ -49,7 +53,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
         .d(Src_B_ALU_interim)
     );
 
-    
+    // ALU Src Mux - immediate vs register
     Mux alu_src_mux (
         .a(Src_B_ALU_interim),
         .b(Imm_Ext_E),
@@ -92,7 +96,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
         .stall(stall)
     );
 
-
+    // Integer ALU Unit
     ALU alu (
         .A(Src_A_ALU),
         .B(Src_B_ALU),
@@ -104,14 +108,34 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
         .Negative(NegativeE)
     );
 
-    
+    // Branch target calculation (separate from jump)
     PC_Adder branch_adder (
         .a(PCE),
         .b(Imm_Ext_E),
-        .c(PCTargetE)
+        .c(BranchTarget)
     );
 
+    // FIXED: Jump target calculation with proper JALR
+    assign JumpTarget = (OpE == 7'b1100111) ? (Src_A_ALU + Imm_Ext_E) :  // JALR: rs1 + imm
+                       (PCE + Imm_Ext_E);                                  // JAL: PC + imm
+
+    // FIXED: Complete Branch Condition Logic with overflow handling
+    wire signed_less, unsigned_less;
+    assign signed_less = (NegativeE ^ OverFlowE);  // Proper signed comparison
+    assign unsigned_less = ~CarryE;                // Unsigned comparison uses carry
     
+    assign BranchCondition = (funct3E == 3'b000) ? ZeroE :        // BEQ
+                            (funct3E == 3'b001) ? ~ZeroE :       // BNE  
+                            (funct3E == 3'b100) ? signed_less :  // BLT (signed)
+                            (funct3E == 3'b101) ? ~signed_less : // BGE (signed)
+                            (funct3E == 3'b110) ? unsigned_less : // BLTU (unsigned)
+                            (funct3E == 3'b111) ? ~unsigned_less : // BGEU (unsigned)
+                            1'b0;                                // Default
+
+    // FIXED: PC Target selection - don't overwrite branch calculation
+    assign PCTargetE = JumpE ? JumpTarget : BranchTarget;
+
+    // Pipeline register logic with stall control
     always @(posedge clk or negedge rst) begin
         if(rst == 1'b0) begin
             RegWriteE_r <= 1'b0; 
@@ -126,14 +150,18 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
             floadE_r <= 0;
             fstoreE_r <= 0;
         end
-        else if(!o_p_waitrequest && !stall) begin 
+        else if(!o_p_waitrequest && !stall) begin
             RegWriteE_r <= RegWriteE; 
             MemWriteE_r <= MemWriteE; 
             ResultSrcE_r <= ResultSrcE;
             RD_E_r <= RD_E;
             PCPlus4E_r <= PCPlus4E; 
             RD2_E_r <= (is_FOP) ? Src_B_FPU_interim : Src_B_ALU_interim; 
-            ResultE_r <= ResultE;
+            // FIXED: Handle different result types properly
+            ResultE_r <= (JumpE) ? PCPlus4E :                    // JAL/JALR: save return address
+                        (OpE == 7'b0110111) ? Imm_Ext_E :       // LUI: load immediate  
+                        (OpE == 7'b0010111) ? (PCE + Imm_Ext_E) : // AUIPC: PC + immediate
+                        ResultE;                                 // Default: ALU result
             FRegWrite_E_r <= FRegWrite_E;
             FResultE_r <= FResultE;
             floadE_r <= floadE;
@@ -141,8 +169,8 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
         end
     end
 
-    
-    assign PCSrcE = ZeroE & BranchE; 
+    // Output Assignments
+    assign PCSrcE = (BranchE & BranchCondition) | JumpE;
     assign RegWriteM = RegWriteE_r;
     assign MemWriteM = MemWriteE_r;
     assign ResultSrcM = ResultSrcE_r;
