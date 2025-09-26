@@ -36,12 +36,10 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
     wire [31:0] cnt_hit_w;
     wire [31:0] cnt_wb_r;
     wire [31:0] cnt_wb_w;
-
-    // Fixed memory interface - remove confusing address translation
-    assign i_p_addr = ALU_ResultM[24:0];  // Direct address from ALU
-    assign i_p_byte_en = 4'b1111;  // Full word access for now
+    assign i_p_addr = ALU_ResultM[24:0]; 
+    assign i_p_byte_en = 4'b1111;
     assign i_p_writedata = WriteDataM;
-    assign i_p_read = ResultSrcM & !MemWriteM;  // Only read for load instructions
+    assign i_p_read = ResultSrcM & !MemWriteM;
     assign i_p_write = MemWriteM;
     assign ReadDataM = o_p_readdata;
 
@@ -73,17 +71,16 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
         .cnt_wb_w(cnt_wb_w)
     );
 
-    // Main memory (acts as backing store for cache)
     Data_Memory dmem (
         .clk(clk),
         .rst(rst),
         .WE(o_m_write),
-        .WD(o_m_writedata),
+        .WD(o_m_writedata),             
         .i_m_readdata_valid(i_m_readdata_valid),
         .i_m_waitrequest(i_m_waitrequest),
         .ren(o_m_read),
-        .A({6'b000000, o_m_addr}),  // Extend address to 32 bits
-        .RD(i_m_readdata)
+        .A({6'b000000, o_m_addr}),        
+        .RD(i_m_readdata)                  
     );
 
     always @(posedge clk or negedge rst) begin
