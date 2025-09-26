@@ -5,7 +5,7 @@ module Main_Decoder(input [6:0]Op,
     output [2:0]ImmSrc,  
     output [1:0]ALUOp);
     
-    // Floating point operations
+
     assign fadd = (Op == 7'b1010011 && funct7 == 7'b0000000) ? 1 : 0;
     assign fsub = (Op == 7'b1010011 && funct7 == 7'b0000100) ? 1 : 0;
     assign fmul = (Op == 7'b1010011 && funct7 == 7'b0001000) ? 1 : 0;
