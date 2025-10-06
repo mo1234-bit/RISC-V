@@ -53,7 +53,7 @@
     localparam COMP = 1;
     localparam HIT  = 2;
     localparam FETCH1 = 3;
-    localparam FETCH3 = 4;
+    localparam FETCH2 = 4;
     localparam WB1 = 5;
     localparam WB2 = 6;
 
@@ -168,6 +168,7 @@
             {cnt_r, cnt_w} <= 0;
             {cnt_hit_r, cnt_hit_w} <= 0;
             {cnt_wb_r, cnt_wb_w} <= 0;
+            o_p_readdata<=0;
             state <= IDLE;
         end
         else begin
@@ -266,7 +267,7 @@
                     if(i_m_readdata_valid) begin
                         fetch_write <= 0;            
                         if(write_buf) begin
-                            state <= FETCH3;
+                            state <= FETCH2;
                             write_set <= fetch_write;
 		                end else if(read_buf) begin
                             state <= IDLE;
@@ -278,7 +279,7 @@
                     end
                     end 
                 end
-                FETCH3: begin
+                FETCH2: begin
                     state <= IDLE;
                     write_set <= 0;
                 end
