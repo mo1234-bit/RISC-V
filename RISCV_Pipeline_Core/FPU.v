@@ -1,4 +1,5 @@
 module FPU (
+    input clk,            
     input rst_n,
     input [31:0]A,B,
     output [31:0]FResult,
@@ -12,21 +13,23 @@ module FPU (
     
     assign stall = (active_div || active_mul || active_adder);
     
-   
-    assign A_ack_adder = (FPUControl == 3'd1); 
+    
+    assign A_ack_adder = (FPUControl == 3'd1);  
     assign B_ack_adder = (FPUControl == 3'd1);
-    assign A_ack_mul = (FPUControl == 3'd2);   
+    assign A_ack_mul = (FPUControl == 3'd2);    
     assign B_ack_mul = (FPUControl == 3'd2);
-    assign A_ack_div = (FPUControl == 3'd3);   
+    assign A_ack_div = (FPUControl == 3'd3);  
     assign B_ack_div = (FPUControl == 3'd3);
+    
 
     assign FResult = (FPUControl == 3'd1) ? FResult_adder :
                      (FPUControl == 3'd2) ? FResult_mul :
                      (FPUControl == 3'd3) ? FResult_div :
-                     (FPUControl == 3'd4) ? FResult_adder : 
+                     (FPUControl == 3'd4) ? FResult_adder :  
                      32'd0;
 
     adder fadder(
+        .clk(clk),          
         .rst(rst_n),
         .input_a(A),
         .input_a_stb(A_ack_adder),
@@ -38,6 +41,7 @@ module FPU (
     );
 
     divider fdiv(
+        .clk(clk),          
         .rst(rst_n),
         .input_a(A),
         .input_a_stb(A_ack_div),
@@ -49,6 +53,7 @@ module FPU (
     );
 
     multiplier fmul(
+        .clk(clk),          
         .rst(rst_n),
         .input_a(A),
         .input_a_stb(A_ack_mul),
@@ -60,4 +65,3 @@ module FPU (
     );
 
 endmodule
-
