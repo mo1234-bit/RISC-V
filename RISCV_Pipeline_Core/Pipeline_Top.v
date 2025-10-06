@@ -19,11 +19,11 @@ module Pipeline_top1(input clk, rst,
     // Floating point signals
     wire faddE, fsubE, fmulE, fdivE, floadE, fstoreE, fsqrtE, FRegWrite_E;
     wire [31:0] FPU_ResultEM, FRD1_E, FRD2_E, FResultW;
-    wire FRegWriteW, FRegWrite_M, FRegWriteMW, floadM, fstoreM;
+    wire FRegWrite_M, FRegWriteMW, floadM, fstoreM,FResultSrcE,FResultSrcM,FResultSrcW;
     
     // Pipeline control
     wire o_p_waitrequest, stall, is_FOP;
-    wire StallF, StallD, FlushE;
+    wire StallF, StallD, FlushE,FlushD;
     
     assign Result = ResultW[15:0];
 
@@ -43,7 +43,7 @@ module Pipeline_top1(input clk, rst,
     decode_cycle Decode (
         .clk(clk), 
         .rst(rst), 
-        .InstrD(InstrD), 
+        .InstrDe(InstrD), 
         .PCD(PCD), 
         .PCPlus4D(PCPlus4D), 
         .RegWriteW(RegWriteW), 
@@ -79,7 +79,9 @@ module Pipeline_top1(input clk, rst,
         .FRD2_E(FRD2_E),
         .FRegWrite_E(FRegWrite_E),
         .FRegWriteW(FRegWriteMW),
-        .is_FOP(is_FOP)
+        .is_FOP(is_FOP),
+        .FResultSrcE(FResultSrcE),
+        .FlushD(FlushD)
     );
 
     execute_cycle Execute (
@@ -117,6 +119,7 @@ module Pipeline_top1(input clk, rst,
         .fsubE(fsubE),
         .fmulE(fmulE),
         .fdivE(fdivE),
+        .FResultSrcE(FResultSrcE),
         .floadE(floadE),
         .fstoreE(fstoreE),
         .fsqrtE(fsqrtE),
@@ -129,7 +132,8 @@ module Pipeline_top1(input clk, rst,
         .FPU_ResultW(FResultW),
         .is_FOP(is_FOP),
         .FRD1_E(FRD1_E),
-        .FRD2_E(FRD2_E)
+        .FRD2_E(FRD2_E),
+        .FResultSrcM(FResultSrcM)
     );
 
     memory_cycle Memory (
@@ -144,6 +148,8 @@ module Pipeline_top1(input clk, rst,
         .ALU_ResultM(ALU_ResultM), 
         .RegWriteW(RegWriteW), 
         .ResultSrcW(ResultSrcW), 
+        .FResultSrcM(FResultSrcM),
+        .FResultSrcW(FResultSrcW),
         .RD_W(RDW), 
         .PCPlus4W(PCPlus4W), 
         .ALU_ResultW(ALU_ResultW), 
@@ -161,6 +167,7 @@ module Pipeline_top1(input clk, rst,
         .clk(clk), 
         .rst(rst), 
         .ResultSrcW(ResultSrcW), 
+        .FResultSrcW(FResultSrcW),
         .PCPlus4W(PCPlus4W), 
         .ALU_ResultW(ALU_ResultW), 
         .ReadDataW(ReadDataW), 
@@ -168,7 +175,6 @@ module Pipeline_top1(input clk, rst,
         .o_p_waitrequest(o_p_waitrequest),
         .fResultW(FResultW),
         .FPU_ResultW(FPU_ResultEW),
-        .fResultSrcW(1'b0),
         .fReadDataW(32'b0)
     );
 
@@ -188,7 +194,9 @@ module Pipeline_top1(input clk, rst,
         .ForwardBE(ForwardBE),
         .StallF(StallF),
         .StallD(StallD),
-        .FlushE(FlushE)
+        .FlushE(FlushE),
+        .PCSrcE(PCSrcE),
+        .FlushD(FlushD)
     );
 
 endmodule
