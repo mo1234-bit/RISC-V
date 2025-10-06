@@ -13,11 +13,15 @@ module Register_File(input clk,rst,WE3,
     end
 
 
-    assign RD1 = (rst == 1'b0) ? 32'd0 : 
-                 (A1 == 5'h00) ? 32'h00000000 : Register[A1];
+   assign RD1 = (rst == 1'b0) ? 32'd0 : 
+                 (A1 == 5'h00) ? 32'h00000000 : 
+                 (WE3 && (A3 == A1) && (A3 != 5'h00)) ? WD3 :  
+                 Register[A1]; 
                  
     assign RD2 = (rst == 1'b0) ? 32'd0 : 
-                 (A2 == 5'h00) ? 32'h00000000 : Register[A2];
+                 (A2 == 5'h00) ? 32'h00000000 :  
+                 (WE3 && (A3 == A2) && (A3 != 5'h00)) ? WD3 : 
+                 Register[A2];
 
     integer i = 0;
     initial begin
