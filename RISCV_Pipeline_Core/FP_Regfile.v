@@ -6,11 +6,11 @@ module freg_file(input clk,rst_n,
 
 reg [31:0]F_register[31:0];
 
-assign F_RD1=(!rst_n)?32'd0:F_register[rs1];
-assign F_RD2=(!rst_n)?32'd0:F_register[rs2];
+assign F_RD1=(rst_n)?32'd0:F_register[rs1];
+assign F_RD2=(rst_n)?32'd0:F_register[rs2];
 integer i=0;
 always @(posedge clk) begin
-   if(!rst_n)begin
+   if(rst_n)begin
         for(i=0;i<32;i=i+1)  
        F_register[i] = 32'h00000000;
   end
