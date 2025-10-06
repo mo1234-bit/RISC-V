@@ -8,23 +8,13 @@
     output wire        o_p_waitrequest,
 
     output reg [25:0]  o_m_addr,
-    output wire [3:0]  o_m_byte_en,
     output reg [31:0] o_m_writedata,
     output reg         o_m_read, o_m_write,
     input wire [31:0] i_m_readdata,
     input wire         i_m_readdata_valid,
-    input wire         i_m_waitrequest,
-
-    output reg [31:0]  cnt_r,
-    output reg [31:0]  cnt_w,
-    output reg [31:0]  cnt_hit_r,
-    output reg [31:0]  cnt_hit_w,
-    output reg [31:0]  cnt_wb_r,
-    output reg [31:0]  cnt_wb_w);
-
+    input wire         i_m_waitrequest
+);
     parameter cache_entry = 14;
-   
-
     wire [3:0]    hit;
     wire [3:0]    modify;
     wire [3:0]    miss;
@@ -36,7 +26,6 @@
     wire [3:0] 	  byte_en;
     wire [22:0]   addr;
     wire [22:0]   wb_addr0, wb_addr1, wb_addr2, wb_addr3;
-    wire [7:0] 	  r_cm_data;
     wire [1:0] 	  hit_num;
 
     reg  [2:0] 	  state;
@@ -46,9 +35,6 @@
     reg 		  write_buf, read_buf;
     reg  [3:0]    write_set;
     reg  [3:0]    fetch_write;
-    reg  [7:0] 	  w_cm_data;
-    reg 		  w_cm;
-
     localparam IDLE = 0;
     localparam COMP = 1;
     localparam HIT  = 2;
@@ -56,20 +42,6 @@
     localparam FETCH2 = 4;
     localparam WB1 = 5;
     localparam WB2 = 6;
-
-
-
-    integer i;
-    
-    initial begin
-        for(i = 0; i <=(2**cache_entry-1); i=i+1) begin
-	        ram_hot.mem[i] = 0;
-        end
-    end
-
-
-    simple_ram #(.width(8), .widthad(cache_entry)) ram_hot(clk, addr[cache_entry-1:0], w_cm, w_cm_data, addr[cache_entry-1:0], r_cm_data);
-
     set #(.cache_entry(cache_entry))
     set0(.clk(clk),
          .rst(rst),
@@ -146,8 +118,6 @@
     assign addr = (o_p_waitrequest) ? write_addr_buf[24:2] : i_p_addr[24:2]; // set module input addr is 23bit 
     assign byte_en = (|fetch_write) ? 4'b1111 : byte_en_buf;
     assign o_p_waitrequest = (state != IDLE);
-    assign o_m_byte_en = 4'b1111;
-
     assign hit_num = (hit[0]) ? 0 : (hit[1]) ? 1 : (hit[2]) ? 2 : 3;
     assign word_en = (|fetch_write) ? 4'b1111 : 
                      (write_addr_buf[1:0] == 2'b00) ? 4'b0001 :
@@ -165,10 +135,8 @@
             {write_buf, read_buf} <= 0;
             write_set <= 0;
             fetch_write <= 0;
-            {cnt_r, cnt_w} <= 0;
-            {cnt_hit_r, cnt_hit_w} <= 0;
-            {cnt_wb_r, cnt_wb_w} <= 0;
             o_p_readdata<=0;
+            o_m_writedata<=0;
             state <= IDLE;
         end
         else begin
@@ -176,92 +144,48 @@
                 IDLE: begin
                     write_set <= 0;
                     o_p_readdata_valid <= 0;
-                    writedata_buf <= {i_p_writedata, i_p_writedata, i_p_writedata, i_p_writedata};
+                    writedata_buf <= {i_p_writedata};
                     write_addr_buf <= i_p_addr;
                     byte_en_buf <= i_p_byte_en;
                     write_buf <= i_p_write;
                     read_buf <= i_p_read;
                     if(i_p_read) begin
                         state <= COMP;
-                        cnt_r <= cnt_r + 1;
                     end else if(i_p_write) begin
                         state <= COMP;
-                        cnt_w <= cnt_w + 1;
                     end
                 end
                 COMP: begin
                     if((|hit) && write_buf) begin
                         state <= HIT;
                         write_set <= hit;
-                        cnt_hit_w <= cnt_hit_w + 1;
-                        w_cm_data <= (r_cm_data[1:0] == hit_num) ? {r_cm_data[1:0], r_cm_data[7:2]} :
-                                     (r_cm_data[3:2] == hit_num) ? {r_cm_data[3:2], r_cm_data[7:4], r_cm_data[1:0]} :
-                                     (r_cm_data[5:4] == hit_num) ? {r_cm_data[5:4], r_cm_data[7:6], r_cm_data[3:0]} : r_cm_data;
-                        w_cm <= 1;
                     end else if((|hit) && read_buf) begin
-                         o_p_readdata <= (hit[0]) ? readdata0[31:0] : (hit[1]) ? readdata1[31:0] : (hit[2]) ? readdata2[31:0] : readdata3[31:0];
-                        
+                         o_p_readdata <= (hit[0]) ? readdata0 : (hit[1]) ? readdata1 : (hit[2]) ? readdata2 : readdata3;
                         o_p_readdata_valid <= 1;
-                        w_cm_data <= (r_cm_data[1:0] == hit_num) ? {r_cm_data[1:0], r_cm_data[7:2]} :
-                                     (r_cm_data[3:2] == hit_num) ? {r_cm_data[3:2], r_cm_data[7:4], r_cm_data[1:0]} :
-                                     (r_cm_data[5:4] == hit_num) ? {r_cm_data[5:4], r_cm_data[7:6], r_cm_data[3:0]} : r_cm_data;
-                        w_cm <= 1;
-                        cnt_hit_r <= cnt_hit_r + 1;
                         state <= IDLE;
-                    end else if(!(&valid) || miss[r_cm_data[1:0]]) begin
+                    end else if(!(&valid)) begin
                         state <= FETCH1;
                         if(!valid[0]) begin
                             fetch_write <= 4'b0001;
-                            w_cm_data <= 8'b11100100;
-                            w_cm <= 1;
                         end else if(!valid[1]) begin
                             fetch_write <= 4'b0010;
-                            w_cm_data <= (r_cm_data[1:0] == 2'b01) ? {r_cm_data[1:0], r_cm_data[7:2]} :
-                                         (r_cm_data[3:2] == 2'b01) ? {r_cm_data[3:2], r_cm_data[7:4], r_cm_data[1:0]} :
-                                         (r_cm_data[5:4] == 2'b01) ? {r_cm_data[5:4], r_cm_data[7:6], r_cm_data[3:0]} : r_cm_data;
-                            w_cm <= 1;
                         end else if(!valid[2]) begin
                             fetch_write <= 4'b0100;
-                            w_cm_data <= (r_cm_data[1:0] == 2'b10) ? {r_cm_data[1:0], r_cm_data[7:2]} :
-                                         (r_cm_data[3:2] == 2'b10) ? {r_cm_data[3:2], r_cm_data[7:4], r_cm_data[1:0]} :
-                                         (r_cm_data[5:4] == 2'b10) ? {r_cm_data[5:4], r_cm_data[7:6], r_cm_data[3:0]} : r_cm_data;
-                            w_cm <= 1;
                         end else if(!valid[3]) begin
                             fetch_write <= 4'b1000;
-                            w_cm_data <= (r_cm_data[1:0] == 2'b11) ? {r_cm_data[1:0], r_cm_data[7:2]} :
-                                         (r_cm_data[3:2] == 2'b11) ? {r_cm_data[3:2], r_cm_data[7:4], r_cm_data[1:0]} :
-                                         (r_cm_data[5:4] == 2'b11) ? {r_cm_data[5:4], r_cm_data[7:6], r_cm_data[3:0]} : r_cm_data;
-                            w_cm <= 1;
-                        end else if(miss[r_cm_data[1:0]]) begin
-                            if(r_cm_data[1:0] == 2'b00) fetch_write <= 4'b0001;
-                            else if(r_cm_data[1:0] == 2'b01) fetch_write <= 4'b0010;
-                            else if(r_cm_data[1:0] == 2'b10) fetch_write <= 4'b0100;
-                            else if(r_cm_data[1:0] == 2'b11) fetch_write <= 4'b1000;
-                            w_cm_data <= {r_cm_data[1:0], r_cm_data[7:2]};
-                            w_cm <= 1;
-                        end
+                        end 
                         o_m_addr <= {write_addr_buf[24:2], 3'b000};
                         o_m_read <= 1;
                     end else begin
                         state <= WB1;
-                        if(r_cm_data[1:0] == 2'b00) fetch_write <= 4'b0001;
-                        else if(r_cm_data[1:0] == 2'b01) fetch_write <= 4'b0010;
-                        else if(r_cm_data[1:0] == 2'b10) fetch_write <= 4'b0100;
-                        else if(r_cm_data[1:0] == 2'b11) fetch_write <= 4'b1000;
-                        w_cm_data <= {r_cm_data[1:0], r_cm_data[7:2]};
-                        w_cm <= 1;
-                        if(read_buf) cnt_wb_r <= cnt_wb_r + 1;
-                        else if(write_buf) cnt_wb_w <= cnt_wb_w + 1;
                     end
                 end
                 HIT: begin
-                    w_cm <= 0;
                     write_set <= 0;
                     state <= IDLE;
                 end 
                
                 FETCH1: begin
-                 w_cm <= 0;
                     if(!i_m_waitrequest) begin
                         o_m_read <= 0;
                     if(i_m_readdata_valid) begin
@@ -272,9 +196,7 @@
 		                end else if(read_buf) begin
                             state <= IDLE;
 		                    o_p_readdata_valid <= 1;
-		                    o_p_readdata <= i_m_readdata[ 31: 0];
-		                      
-		           
+		                    o_p_readdata <= i_m_readdata;
 		                end
                     end
                     end 
@@ -284,7 +206,6 @@
                     write_set <= 0;
                 end
                 WB1: begin
-                    w_cm <= 0;
                     o_m_addr <= (fetch_write[0]) ? {wb_addr0, 3'b000} :
                                 (fetch_write[1]) ? {wb_addr1, 3'b000} :
                                 (fetch_write[2]) ? {wb_addr2, 3'b000} : {wb_addr3, 3'b000};
@@ -324,9 +245,7 @@ module set(clk,
            miss,
            valid,
            read_miss);
-
     parameter cache_entry = 14;
-
     input wire                    clk, rst;
     input wire [cache_entry-1:0]  entry;
     input wire [22-cache_entry:0] o_tag;
@@ -351,18 +270,12 @@ module set(clk,
     assign miss = !valid || ((o_tag != i_tag) && !dirty);
 
     assign wb_addr = {i_tag, entry};
-
-    //write -> [3:0] write, writedata/readdata 32bit -> 128bit
-   
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_3(clk, entry, write && word_en[0]  && byte_en[3], writedata[31:24], entry, readdata[31:24]);
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_2(clk, entry, write && word_en[0]  && byte_en[2], writedata[23:16], entry, readdata[23:16]);
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_1(clk, entry, write && word_en[0]  && byte_en[1], writedata[15: 8], entry, readdata[15:8]);
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_0(clk, entry, write && word_en[0]  && byte_en[0], writedata[ 7: 0], entry, readdata[ 7:0]);
-
-
     assign write_tag_data = (read_miss) ? {1'b0, 1'b1, o_tag} : (modify || miss ) ? {1'b1, 1'b1, o_tag} : {1'b1, 1'b1, i_tag};
     simple_ram #(.width(25-cache_entry), .widthad(cache_entry)) ram_tag(clk, entry, write, write_tag_data, entry, {dirty, valid, i_tag});
-
     integer i;
 
     initial begin
