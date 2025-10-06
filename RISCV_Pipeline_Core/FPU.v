@@ -20,12 +20,12 @@ module FPU (
     assign B_ack_mul = (FPUControl == 3'd2);
     assign A_ack_div = (FPUControl == 3'd3);  
     assign B_ack_div = (FPUControl == 3'd3);
-    
+    wire [31:0]input_b=(FPUControl == 3'd4)?A:B;
 
     assign FResult = (FPUControl == 3'd1) ? FResult_adder :
                      (FPUControl == 3'd2) ? FResult_mul :
                      (FPUControl == 3'd3) ? FResult_div :
-                     (FPUControl == 3'd4) ? FResult_adder :  
+                     (FPUControl == 3'd4) ? FResult_mul :  
                      32'd0;
 
     adder fadder(
@@ -57,7 +57,7 @@ module FPU (
         .rst(rst_n),
         .input_a(A),
         .input_a_stb(A_ack_mul),
-        .input_b(B),
+        .input_b(input_b),
         .input_b_stb(B_ack_mul),
         .output_z(FResult_mul),
         .output_z_stb(finish_mul),
