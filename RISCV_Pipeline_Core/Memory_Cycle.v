@@ -1,14 +1,14 @@
-module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,fstoreM,floadM,
+module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,fstoreM,floadM,FResultSrcM,
     input [4:0] RD_M,
     input [31:0] PCPlus4M, WriteDataM, ALU_ResultM,FPU_ResultEM,
     output RegWriteW, ResultSrcW, 
     output [4:0] RD_W,
     output [31:0] PCPlus4W, ALU_ResultW, ReadDataW,FPU_ResultEW,
-    output o_p_waitrequest,FRegWriteMW);
+    output o_p_waitrequest,FRegWriteMW,FResultSrcW);
     
     
     wire [31:0] ReadDataM;
-    reg RegWriteM_r,FRegWriteM_r, ResultSrcM_r;
+    reg RegWriteM_r,FRegWriteM_r, ResultSrcM_r,FResultSrcM_r;
     reg [4:0] RD_M_r;
     reg [31:0] PCPlus4M_r, ALU_ResultM_r, ReadDataM_r, FPU_ResultEM_r;
     
@@ -39,14 +39,14 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
     assign i_p_addr = ALU_ResultM[24:0]; 
     assign i_p_byte_en = 4'b1111;
     assign i_p_writedata = WriteDataM;
-    assign i_p_read = ResultSrcM & !MemWriteM;
+    assign i_p_read = FResultSrcM & !MemWriteM;
     assign i_p_write = MemWriteM;
     assign ReadDataM = o_p_readdata;
 
     // Cache instance
     cache dut(
         .clk(clk),
-        .rst(rst),
+        .rst(~rst),
         .i_p_addr(i_p_addr),
         .i_p_byte_en(i_p_byte_en),
         .i_p_writedata(i_p_writedata),
@@ -93,8 +93,10 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
             ReadDataM_r <= 32'h00000000;
             FRegWriteM_r <= 1'b0;
             FPU_ResultEM_r <= 32'd0;
+            FResultSrcM_r <= 1'b0; 
         end
         else if(!o_p_waitrequest) begin
+        FResultSrcM_r <= FResultSrcM;
             RegWriteM_r <= RegWriteM; 
             ResultSrcM_r <= ResultSrcM;
             RD_M_r <= RD_M;
@@ -105,7 +107,7 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
             FPU_ResultEM_r <= FPU_ResultEM;
         end
     end 
-    
+    assign FResultSrcW = FResultSrcM_r;
     assign RegWriteW = RegWriteM_r;
     assign ResultSrcW = ResultSrcM_r;
     assign RD_W = RD_M_r;
