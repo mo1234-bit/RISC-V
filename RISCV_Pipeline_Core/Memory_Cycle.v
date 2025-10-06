@@ -22,7 +22,6 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
     wire o_p_readdata_valid;
 
     wire [25:0] o_m_addr;
-    wire [3:0] o_m_byte_en;
     wire [31:0] o_m_writedata;
     wire o_m_read;
     wire o_m_write;
@@ -30,16 +29,10 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
     wire i_m_readdata_valid;
     wire i_m_waitrequest;
 
-    wire [31:0] cnt_r;
-    wire [31:0] cnt_w;
-    wire [31:0] cnt_hit_r;
-    wire [31:0] cnt_hit_w;
-    wire [31:0] cnt_wb_r;
-    wire [31:0] cnt_wb_w;
     assign i_p_addr = ALU_ResultM[24:0]; 
     assign i_p_byte_en = 4'b1111;
     assign i_p_writedata = WriteDataM;
-    assign i_p_read = FResultSrcM & !MemWriteM;
+   assign i_p_read = (ResultSrcM | FResultSrcM) & !MemWriteM;
     assign i_p_write = MemWriteM;
     assign ReadDataM = o_p_readdata;
 
@@ -56,19 +49,12 @@ module memory_cycle(input clk, rst, RegWriteM,FRegWriteM, MemWriteM, ResultSrcM,
         .o_p_readdata_valid(o_p_readdata_valid),
         .o_p_waitrequest(o_p_waitrequest),
         .o_m_addr(o_m_addr),
-        .o_m_byte_en(o_m_byte_en),
         .o_m_writedata(o_m_writedata),
         .o_m_read(o_m_read),
         .o_m_write(o_m_write),
         .i_m_readdata(i_m_readdata),
         .i_m_readdata_valid(i_m_readdata_valid),
-        .i_m_waitrequest(i_m_waitrequest),
-        .cnt_r(cnt_r),
-        .cnt_w(cnt_w),
-        .cnt_hit_r(cnt_hit_r),
-        .cnt_hit_w(cnt_hit_w),
-        .cnt_wb_r(cnt_wb_r),
-        .cnt_wb_w(cnt_wb_w)
+        .i_m_waitrequest(i_m_waitrequest)
     );
 
     Data_Memory dmem (
