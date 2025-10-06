@@ -12,6 +12,7 @@ module ALU( input [31:0]A,B,
     assign Sum = (ALUControl[0] == 1'b0) ? A + B : (A + ((~B) + 1));
    assign ShiftResult = (ALUControl == 4'b0111) ? (A << ShiftAmount) :             
                      (ALUControl == 4'b1000) ? (A >> ShiftAmount) :              
+                     (ALUControl == 4'b1001) ? ($signed(A) >>> ShiftAmount) : 
                      32'b0;
 
     assign {Cout, Result} = 
@@ -24,7 +25,8 @@ module ALU( input [31:0]A,B,
         (ALUControl == 4'b0110) ? {1'b0, {31'b0, ~Cout}} :        
         (ALUControl == 4'b0111) ? {1'b0, ShiftResult} :           
         (ALUControl == 4'b1000) ? {1'b0, ShiftResult} :           
-        {1'b0, 32'b0}; 
+      (ALUControl == 4'b1001) ? {1'b0, ShiftResult} :  
+    {1'b0, 32'b0};
     
 
     assign OverFlow = ((Sum[31] ^ A[31]) & 
