@@ -1,6 +1,6 @@
 module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     input [4:0] RDW,
-    input [31:0] InstrD, PCD, PCPlus4D, ResultW,
+    input [31:0] InstrDe, PCD, PCPlus4D, ResultW,
     output RegWriteE,ALUSrcE,MemWriteE,ResultSrcE,BranchE,JumpE,
     output [3:0] ALUControlE,
     output [2:0] funct3E,
@@ -8,17 +8,17 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     output [31:0] RD1_E, RD2_E,FRD1_E,FRD2_E, Imm_Ext_E,
     output [4:0] RS1_E, RS2_E, RD_E,
     output [31:0] PCE, PCPlus4E,
-    input o_p_waitrequest, stall,
-    output faddE,fsubE,fmulE,fdivE,floadE,fstoreE,fsqrtE,FRegWrite_E,is_FOP);
+    input o_p_waitrequest, stall,FlushD,
+    output faddE,fsubE,fmulE,fdivE,floadE,fstoreE,fsqrtE,FRegWrite_E,is_FOP,FResultSrcE);
 
     wire RegWriteD,ALUSrcD,MemWriteD,ResultSrcD,BranchD,JumpD;
     wire [2:0] ImmSrcD;
     wire [3:0] ALUControlD;
-    wire [31:0] RD1_D, RD2_D,FRD1_D,FRD2_D, Imm_Ext_D;
+    wire [31:0] RD1_D, RD2_D,FRD1_D,FRD2_D, Imm_Ext_D,InstrD;
     wire fadd,fsub,fmul,fdiv,fload,fstore,fsqrt,FRegWriteD;
-    
+    wire FResultSrc;
     // Pipeline registers
-    reg RegWriteD_r,ALUSrcD_r,MemWriteD_r,ResultSrcD_r,BranchD_r,JumpD_r;
+    reg RegWriteD_r,ALUSrcD_r,MemWriteD_r,ResultSrcD_r,BranchD_r,JumpD_r,FResultSrcD_r;
     reg [3:0] ALUControlD_r;
     reg [2:0] funct3D_r;
     reg [6:0] OpD_r;  
@@ -26,7 +26,7 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     reg [4:0] RD_D_r, RS1_D_r, RS2_D_r;
     reg [31:0] PCD_r, PCPlus4D_r;
     reg faddr,fsubr,fmulr,fdivr,floadr,fstorer,fsqrtr,FRegWrite_r;
-    
+    assign InstrD=(FlushD)?32'd0:InstrDe;
     assign is_FOP = (faddr||fsubr||fmulr||fdivr||floadr||fstorer || fsqrtr || FRegWrite_r) ? 1 : 0;
 
     // Control Unit
@@ -49,7 +49,8 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
         .fload(fload),
         .fstore(fstore),
         .fsqrt(fsqrt),
-        .FRegWrite(FRegWriteD)
+        .FRegWrite(FRegWriteD),
+        .FResultSrc(FResultSrc) 
     );
 
     // Floating Point Register File
@@ -115,6 +116,7 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
             FRD1_D_r <= 32'b0;
             FRD2_D_r <= 32'b0;
             FRegWrite_r <= 1'b0;
+            FResultSrcD_r<=0;
         end
         else if(!o_p_waitrequest && !stall) begin
             RegWriteD_r <= RegWriteD;
@@ -144,10 +146,12 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
             FRD1_D_r <= FRD1_D;
             FRD2_D_r <= FRD2_D;
             FRegWrite_r <= FRegWriteD;
+            FResultSrcD_r<=FResultSrc;
         end
     end
 
     // Output assignments
+    assign FResultSrcE=FResultSrcD_r;
     assign RegWriteE = RegWriteD_r;
     assign ALUSrcE = ALUSrcD_r;
     assign MemWriteE = MemWriteD_r;
