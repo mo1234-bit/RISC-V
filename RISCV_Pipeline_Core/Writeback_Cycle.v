@@ -1,4 +1,4 @@
-module writeback_cycle(input clk, rst, ResultSrcW,fResultSrcW,
+module writeback_cycle(input clk, rst, ResultSrcW,FResultSrcW,
 input [31:0] PCPlus4W, ALU_ResultW, ReadDataW,FPU_ResultW,fReadDataW,
 input o_p_waitrequest,
 output [31:0] ResultW,fResultW);
