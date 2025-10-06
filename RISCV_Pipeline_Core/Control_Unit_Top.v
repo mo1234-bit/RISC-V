@@ -1,8 +1,9 @@
 module Control_Unit_Top(input [6:0]Op,funct7,
     input [2:0]funct3,
     output RegWrite,ALUSrc,MemWrite,ResultSrc,Branch,Jump,
-    output [2:0]ImmSrc,  // Extended to 3 bits
-    output [3:0]ALUControl,  // Extended to 4 bits
+    output [2:0]ImmSrc, 
+    output FResultSrc,
+    output [3:0]ALUControl,  
     output fadd,fsub,fmul,fdiv,fload,fstore,fsqrt,FRegWrite);
 
     wire [1:0]ALUOp;
@@ -25,7 +26,8 @@ module Control_Unit_Top(input [6:0]Op,funct7,
         .fload(fload),
         .fstore(fstore),
         .fsqrt(fsqrt),
-        .FRegWrite(FRegWrite)
+        .FRegWrite(FRegWrite),
+        .FResultSrc(FResultSrc) 
     );
 
     ALU_Decoder ALU_Decoder(
