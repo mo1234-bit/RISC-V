@@ -1,5 +1,5 @@
 module adder(
-  input     clk,          
+  input     clk,         
   input     rst,
 
   input     [31:0] input_a,
@@ -38,7 +38,7 @@ module adder(
 
   assign active = (state != get_a && output_z_stb != 1);  
   
-
+ 
   always @(posedge clk or negedge rst)
   begin
     if (rst == 0) begin
