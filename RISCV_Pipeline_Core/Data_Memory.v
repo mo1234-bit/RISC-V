@@ -1,4 +1,3 @@
-
 module Data_Memory(input wire ren, 
     input clk,rst,WE,
     output wire i_m_readdata_valid,
