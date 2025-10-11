@@ -1,4 +1,4 @@
-module fetch_cycle( input clk, rst,
+module fetch_cycle( input clk, rst_n,
     input PCSrcE, JumpE,
     input [31:0] PCTargetE,
     output [31:0] InstrD,
@@ -29,14 +29,14 @@ module fetch_cycle( input clk, rst,
 
     PC_Module Program_Counter (
         .clk(clk),
-        .rst(rst),
+        .rst_n(rst_n),
         .PC(PCF),
         .o_p_waitrequest(o_p_waitrequest | stall),
         .PC_Next(PC_F)
     );
 
     Instruction_Memory IMEM (
-        .rst(rst),
+        .rst_n(rst_n),
         .A(PCF),
         .RD(InstrF),
         .o_p_waitrequest(o_p_waitrequest)
@@ -48,8 +48,8 @@ module fetch_cycle( input clk, rst,
         .c(PCPlus4F)
     );
 
-    always @(posedge clk or negedge rst) begin
-        if(rst == 1'b0) begin
+    always @(posedge clk) begin
+        if(rst_n == 1'b0) begin
             InstrF_reg <= 32'h00000000;
             PCF_reg <= 32'h00000000;
             PCPlus4F_reg <= 32'h00000000;
@@ -68,8 +68,8 @@ module fetch_cycle( input clk, rst,
         end
     end
 
-    assign InstrD = (rst == 1'b0) ? 32'h00000000 : InstrF_reg;
-    assign PCD = (rst == 1'b0) ? 32'h00000000 : PCF_reg;
-    assign PCPlus4D = (rst == 1'b0) ? 32'h00000000 : PCPlus4F_reg;
+    assign InstrD = (rst_n == 1'b0) ? 32'h00000000 : InstrF_reg;
+    assign PCD = (rst_n == 1'b0) ? 32'h00000000 : PCF_reg;
+    assign PCPlus4D = (rst_n == 1'b0) ? 32'h00000000 : PCPlus4F_reg;
 
 endmodule
