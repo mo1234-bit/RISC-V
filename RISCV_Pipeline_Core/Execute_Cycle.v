@@ -1,4 +1,4 @@
-module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,ResultSrcE,BranchE,JumpE,FResultSrcE,
+module execute_cycle( input clk, rst_n, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,ResultSrcE,BranchE,JumpE,FResultSrcE,
     input [3:0] ALUControlE,
     input [2:0] funct3E,
     input [6:0] OpE, 
@@ -9,7 +9,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     input [1:0] ForwardA_E, ForwardB_E,
     input faddE,fsubE,fmulE,fdivE,floadE,fstoreE,fsqrtE,is_FOP,
     input o_p_waitrequest,o_p_readdata_valid,
-    output PCSrcE, RegWriteM, MemWriteM, ResultSrcM,
+    output PCSrcE, RegWriteM, MemWriteM, ResultSrcM,finish,
     output [4:0] RD_M,
     output [31:0] PCPlus4M, WriteDataM, ALU_ResultM,
     output [31:0] PCTargetE,
@@ -19,8 +19,8 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
 
     wire [31:0] Src_A_ALU,Src_B_ALU,Src_A_FPU,Src_B_FPU, Src_B_FPU_interim,Src_B_ALU_interim;
     wire [31:0] ResultE,FResultE;
-    wire ZeroE, NegativeE, OverFlowE, CarryE;
-    wire BranchCondition;
+    wire ZeroE, NegativeE, OverFlowE, CarryE,finish2;
+    wire BranchCondition,finish_adder, finish_div, finish_mul;
     wire [31:0] BranchTarget, JumpTarget;
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r,ResultSrcE_r, FResultSrcE_r;  
     reg [4:0] RD_E_r;
@@ -89,13 +89,16 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     
     FPU fpu_unit(
         .clk(clk),              
-        .rst_n(rst),
+        .rst_n(rst_n),
         .A(Src_A_FPU),
         .B(fsubE ? {~Src_B_FPU[31], Src_B_FPU[30:0]} : Src_B_FPU),
         .FResult(FResultE),
         .FPUControl(FPUControl),
         .stall(stall),
-        .o_p_readdata_valid(o_p_readdata_valid)
+        .o_p_waitrequest(o_p_waitrequest),
+        .finish_adder(finish_adder),
+        .finish_div(finish_div),
+        .finish_mul(finish_mul)
     );
 
     // Integer ALU Unit
@@ -117,7 +120,9 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
         .c(BranchTarget)
     );
 
-    
+    wire finish1=finish_div||finish_mul||finish_adder;
+     D #(1)flip(.in(finish1),.out(finish2),.clk(clk),.rst_n(rst_n));
+    D #(1)flip1(.in(finish2),.out(finish),.clk(clk),.rst_n(rst_n));
     assign JumpTarget = (OpE == 7'b1100111) ? (Src_A_ALU + Imm_Ext_E) :  
                        (PCE + Imm_Ext_E);                                  
 
@@ -138,8 +143,8 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     assign PCTargetE = JumpE ? JumpTarget : BranchTarget;
 
   
-    always @(posedge clk or negedge rst) begin
-        if(rst == 1'b0) begin
+    always @(posedge clk) begin
+        if(rst_n == 1'b0) begin
             RegWriteE_r <= 1'b0; 
             MemWriteE_r <= 1'b0; 
             ResultSrcE_r <= 1'b0;
@@ -154,7 +159,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
             fstoreE_r <= 0;
             InstrDE_r<=0;
         end
-        else if(!o_p_waitrequest && !stall) begin
+        else if((!o_p_waitrequest && !stall)||finish1) begin
             RegWriteE_r <= RegWriteE; 
             MemWriteE_r <= MemWriteE; 
             ResultSrcE_r <= ResultSrcE;
@@ -190,5 +195,4 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     assign floadM = floadE_r;
     assign fstoreM = fstoreE_r;
     assign InstrDM=InstrDE_r;
-
 endmodule
