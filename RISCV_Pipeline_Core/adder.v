@@ -1,12 +1,13 @@
 module adder(
   input     clk,         
-  input     rst,
+  input     rst_n,
 
   input     [31:0] input_a,
   input     input_a_stb,
 
   input     [31:0] input_b,
   input     input_b_stb,
+  input     o_p_waitrequest,
   output    [31:0] output_z,
   output   reg output_z_stb,
   output    wire active
@@ -38,9 +39,9 @@ module adder(
   assign active = (state != get_a_b);  
   
  
-  always @(posedge clk or negedge rst)
+  always @(posedge clk)
   begin
-    if (rst == 0) begin
+    if (rst_n == 0) begin
       state <= get_a_b;
       s_output_z <= 0;
       output_z_stb <= 0;
@@ -61,7 +62,7 @@ module adder(
       sticky <= 0;
       sum <= 0;
     end
-    else begin
+    else if(!o_p_waitrequest) begin
       case(state)
 
         get_a_b:
