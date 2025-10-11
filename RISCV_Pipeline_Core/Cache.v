@@ -1,4 +1,4 @@
-  module cache( input wire         clk, rst,
+  module cache( input wire         clk, rst_n,
     input wire [24:0]  i_p_addr,
     input wire [3:0]   i_p_byte_en,
     input wire [31:0]  i_p_writedata,
@@ -6,7 +6,7 @@
     output reg [31:0]  o_p_readdata,
     output reg         o_p_readdata_valid,
     output wire        o_p_waitrequest,
-
+    input  wire            stall,
     output reg [25:0]  o_m_addr,
     output reg [31:0] o_m_writedata,
     output reg         o_m_read, o_m_write,
@@ -33,7 +33,7 @@
     reg  [24:0]   write_addr_buf;
     reg  [3:0] 	  byte_en_buf;
     reg 		  write_buf, read_buf;
-    reg  [3:0]    write_set;
+    reg  [3:0]    write_set,count;
     reg  [3:0]    fetch_write;
     localparam IDLE = 0;
     localparam COMP = 1;
@@ -44,7 +44,7 @@
     localparam WB2 = 6;
     set #(.cache_entry(cache_entry))
     set0(.clk(clk),
-         .rst(rst),
+         .rst_n(rst_n),
          .entry(addr[cache_entry-1:0]),
          .o_tag(addr[22:cache_entry]),
          .writedata(writedata),
@@ -61,7 +61,7 @@
 
     set #(.cache_entry(cache_entry))
     set1(.clk(clk),
-         .rst(rst),
+         .rst_n(rst_n),
          .entry(addr[cache_entry-1:0]),
          .o_tag(addr[22:cache_entry]),
          .writedata(writedata),
@@ -78,7 +78,7 @@
 
     set #(.cache_entry(cache_entry))
     set2(.clk(clk),
-         .rst(rst),
+         .rst_n(rst_n),
          .entry(addr[cache_entry-1:0]),
          .o_tag(addr[22:cache_entry]),
          .writedata(writedata),
@@ -95,7 +95,7 @@
 
     set #(.cache_entry(cache_entry))
     set3(.clk(clk),
-         .rst(rst),
+         .rst_n(rst_n),
          .entry(addr[cache_entry-1:0]),
          .o_tag(addr[22:cache_entry]),
          .writedata(writedata),
@@ -117,7 +117,8 @@
     assign write3 = (fetch_write[3]) ? i_m_readdata_valid : write_set[3];
     assign addr = (o_p_waitrequest) ? write_addr_buf[24:2] : i_p_addr[24:2]; // set module input addr is 23bit 
     assign byte_en = (|fetch_write) ? 4'b1111 : byte_en_buf;
-    assign o_p_waitrequest = (state != IDLE);
+    assign o_p_waitrequest = (state != IDLE)?1:0;
+   
     assign hit_num = (hit[0]) ? 0 : (hit[1]) ? 1 : (hit[2]) ? 2 : 3;
     assign word_en = (|fetch_write) ? 4'b1111 : 
                      (write_addr_buf[1:0] == 2'b00) ? 4'b0001 :
@@ -125,7 +126,7 @@
                      (write_addr_buf[1:0] == 2'b10) ? 4'b0100 : 4'b1000;
 
     always @(posedge clk) begin
-        if(rst) begin
+        if(!rst_n) begin
             o_p_readdata_valid <= 0;
             {o_m_read, o_m_write} <= 0;
             o_m_addr <= 0;
@@ -139,7 +140,7 @@
             o_m_writedata<=0;
             state <= IDLE;
         end
-        else begin
+        else  begin
             case (state)
                 IDLE: begin
                     write_set <= 0;
@@ -159,24 +160,30 @@
                     if((|hit) && write_buf) begin
                         state <= HIT;
                         write_set <= hit;
-                    end else if((|hit) && read_buf) begin
+                    end 
+                    else if((|hit) && read_buf) begin
                          o_p_readdata <= (hit[0]) ? readdata0 : (hit[1]) ? readdata1 : (hit[2]) ? readdata2 : readdata3;
                         o_p_readdata_valid <= 1;
                         state <= IDLE;
-                    end else if(!(&valid)) begin
+                    end 
+                    else if(!(&valid)) begin
                         state <= FETCH1;
                         if(!valid[0]) begin
                             fetch_write <= 4'b0001;
-                        end else if(!valid[1]) begin
+                        end 
+                        else if(!valid[1]) begin
                             fetch_write <= 4'b0010;
-                        end else if(!valid[2]) begin
+                        end 
+                        else if(!valid[2]) begin
                             fetch_write <= 4'b0100;
-                        end else if(!valid[3]) begin
+                        end 
+                        else if(!valid[3]) begin
                             fetch_write <= 4'b1000;
                         end 
                         o_m_addr <= {write_addr_buf[24:2], 3'b000};
                         o_m_read <= 1;
-                    end else begin
+                    end 
+                    else begin
                         state <= WB1;
                     end
                 end
@@ -230,7 +237,7 @@
 endmodule 
 
 module set(clk,
-           rst,
+           rst_n,
            entry,
            o_tag,
            writedata,
@@ -246,7 +253,7 @@ module set(clk,
            valid,
            read_miss);
     parameter cache_entry = 14;
-    input wire                    clk, rst;
+    input wire                    clk, rst_n;
     input wire [cache_entry-1:0]  entry;
     input wire [22-cache_entry:0] o_tag;
     input wire [31:0] 		      writedata;
