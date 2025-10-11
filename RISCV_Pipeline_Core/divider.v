@@ -1,12 +1,12 @@
 module divider(
   input     clk,         
-  input     rst,
+  input     rst_n,
 
   input     [31:0] input_a,
   input     input_a_stb,
 
   input     [31:0] input_b,
-  input     input_b_stb,
+  input     input_b_stb,o_p_waitrequest,
   output    [31:0] output_z,
   output    reg output_z_stb,
   output    wire active
@@ -15,23 +15,22 @@ module divider(
   reg       [31:0] s_output_z;
 
   reg       [3:0] state;
-  parameter get_a         = 4'd0,
-            get_b         = 4'd1,
-            unpack        = 4'd2,
-            special_cases = 4'd3,
-            normalise_a   = 4'd4,
-            normalise_b   = 4'd5,
-            divide_0      = 4'd6,
-            divide_1      = 4'd7,
-            divide_2      = 4'd8,
-            divide_3      = 4'd9,
-            normalise_1   = 4'd10,
-            normalise_2   = 4'd11,
-            round         = 4'd12,
-            pack          = 4'd13,
-            put_z         = 4'd14;
+  parameter get_a_b       = 4'd0,
+            unpack        = 4'd1,
+            special_cases = 4'd2,
+            normalise_a   = 4'd3,
+            normalise_b   = 4'd4,
+            divide_0      = 4'd5,
+            divide_1      = 4'd6,
+            divide_2      = 4'd7,
+            divide_3      = 4'd8,
+            normalise_1   = 4'd9,
+            normalise_2   = 4'd10,
+            round         = 4'd11,
+            pack          = 4'd12,
+            put_z         = 4'd13;
 
-  assign active = (state != get_a && output_z_stb != 1);  
+ assign active = (state != get_a_b);  
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
@@ -42,10 +41,10 @@ module divider(
   reg       [5:0] count;
 
   
-  always @(posedge clk or negedge rst)
+  always @(posedge clk)
   begin
-    if (rst == 0) begin
-      state <= get_a;
+    if (rst_n == 0) begin
+      state <= get_a_b;
       output_z_stb <= 0;
       s_output_z <= 0;
       a <= 0;
@@ -69,20 +68,15 @@ module divider(
       remainder <= 0;
       count <= 0;
     end
-    else begin
+    else if(!o_p_waitrequest) begin
       case(state)
 
-        get_a:
+        get_a_b:
         begin
           output_z_stb <= 0;
           if (input_a_stb) begin
             a <= input_a;
-            state <= get_b;
           end
-        end
-
-        get_b:
-        begin
           if (input_b_stb) begin
             b <= input_b;
             state <= unpack;
@@ -97,6 +91,9 @@ module divider(
           b_e <= b[30 : 23] - 127;
           a_s <= a[31];
           b_s <= b[31];
+          if(!input_a_stb)
+          state<=get_a_b;
+          else
           state <= special_cases;
         end
 
@@ -219,7 +216,7 @@ module divider(
             quotient[0] <= 1;
             remainder <= remainder - divisor;
           end
-          if (count == 10) begin
+          if (count == 24) begin
             state <= divide_3;
           end else begin
             count <= count + 1;
@@ -294,7 +291,7 @@ module divider(
         begin
           s_output_z <= z;
           output_z_stb <= 1;
-          state <= get_a;
+          state <= get_a_b;
         end
 
       endcase
