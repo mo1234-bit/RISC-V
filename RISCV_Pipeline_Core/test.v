@@ -1,7 +1,7 @@
 module test();
-reg rst,clk;
+reg rst_n,clk;
 wire [15:0]Result;
- Pipeline_top1 dut(.rst(rst),.clk(clk),.Result(Result));
+ Pipeline_top1 dut(.rst_n(rst_n),.clk(clk),.Result(Result));
  initial begin
  	clk=0;
  	forever #1 clk=~clk;
@@ -12,11 +12,11 @@ wire [15:0]Result;
 end
 integer i=0;
 initial begin
-	rst=0;
+	rst_n=0;
 	
-	for(i=0;i<100;i=i+1)begin
+	for(i=0;i<250;i=i+1)begin
 	@(negedge clk);
-	rst=1;
+	rst_n=1;
 	end
 
 	$stop;
