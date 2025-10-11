@@ -1,19 +1,19 @@
-module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
-    input [4:0] RDW,
+module decode_cycle( input clk, rst_n, RegWriteW,FRegWriteW,stallf,finish,
+    input [4:0] RDW,DRDW,
     input [31:0] InstrDe, PCD, PCPlus4D, ResultW,
     output RegWriteE,ALUSrcE,MemWriteE,ResultSrcE,BranchE,JumpE,
     output [3:0] ALUControlE,
     output [2:0] funct3E,
     output [6:0] OpE,  
     output [31:0] RD1_E, RD2_E,FRD1_E,FRD2_E, Imm_Ext_E,
-    output [4:0] RS1_E, RS2_E, RD_E,
-    output [31:0] PCE, PCPlus4E,
+    output [4:0] RS1_E, RS2_E, RD_E,Rs1_D,Rs2_D,
+    output [31:0] PCE, PCPlus4E,InstrDE,fResultW,
     input o_p_waitrequest, stall,FlushD,
     output faddE,fsubE,fmulE,fdivE,floadE,fstoreE,fsqrtE,FRegWrite_E,is_FOP,FResultSrcE);
 
     wire RegWriteD,ALUSrcD,MemWriteD,ResultSrcD,BranchD,JumpD;
     wire [2:0] ImmSrcD;
-    wire [3:0] ALUControlD;
+    wire [3:0] ALUControlD,FPUControl;
     wire [31:0] RD1_D, RD2_D,FRD1_D,FRD2_D, Imm_Ext_D,InstrD;
     wire fadd,fsub,fmul,fdiv,fload,fstore,fsqrt,FRegWriteD;
     wire FResultSrc;
@@ -24,11 +24,18 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     reg [6:0] OpD_r;  
     reg [31:0] RD1_D_r, RD2_D_r,FRD1_D_r,FRD2_D_r, Imm_Ext_D_r;
     reg [4:0] RD_D_r, RS1_D_r, RS2_D_r;
-    reg [31:0] PCD_r, PCPlus4D_r;
+    reg [31:0] PCD_r, PCPlus4D_r,InstrD_r;
     reg faddr,fsubr,fmulr,fdivr,floadr,fstorer,fsqrtr,FRegWrite_r;
+    assign FPUControl = (faddE) ? 3'b001 :    // Addition
+                       (fsubE) ? 3'b001 :    // Subtraction (handled by negating B)
+                       (fmulE) ? 3'b010 :    // Multiplication  
+                       (fdivE) ? 3'b011 :    // Division
+                       (fsqrtE) ? 3'b100 :   // Square root
+                       3'b000;               // Default
     assign InstrD=(FlushD)?32'd0:InstrDe;
-    assign is_FOP = (faddr||fsubr||fmulr||fdivr||floadr||fstorer || fsqrtr || FRegWrite_r) ? 1 : 0;
-
+    assign is_FOP = (faddr||fsubr||fmulr||fdivr || fsqrtr) ? 1 : 0;
+    assign Rs1_D = InstrD[19:15];
+    assign Rs2_D = InstrD[24:20];
     // Control Unit
     Control_Unit_Top control (
         .Op(InstrD[6:0]),
@@ -56,12 +63,12 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     // Floating Point Register File
     freg_file frf(
         .clk(clk),
-        .rst_n(~rst), 
-        .F_WD(ResultW),
+        .rst_n(rst_n), 
+        .F_WD(fResultW),
         .rs1(InstrD[19:15]),
         .rs2(InstrD[24:20]),
-        .rd(RDW),
-        .WE(FRegWriteW),
+        .rd((finish)?DRDW:RDW),
+        .WE((FPUControl!=3'b000)?finish:FRegWriteW),
         .F_RD1(FRD1_D),
         .F_RD2(FRD2_D)
     );
@@ -69,7 +76,7 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
 
     Register_File rf (
         .clk(clk),
-        .rst(rst),
+        .rst_n(rst_n),
         .WE3(RegWriteW),
         .WD3(ResultW),
         .A1(InstrD[19:15]),
@@ -87,8 +94,8 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     );
 
 
-    always @(posedge clk or negedge rst) begin
-        if(rst == 1'b0) begin
+    always @(posedge clk) begin
+        if(rst_n == 1'b0) begin
             RegWriteD_r <= 1'b0;
             ALUSrcD_r <= 1'b0;
             MemWriteD_r <= 1'b0;
@@ -117,6 +124,7 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
             FRD2_D_r <= 32'b0;
             FRegWrite_r <= 1'b0;
             FResultSrcD_r<=0;
+            InstrD_r<=0;
         end
         else if(!o_p_waitrequest && !stall) begin
             RegWriteD_r <= RegWriteD;
@@ -147,6 +155,7 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
             FRD2_D_r <= FRD2_D;
             FRegWrite_r <= FRegWriteD;
             FResultSrcD_r<=FResultSrc;
+            InstrD_r<=InstrDe;
         end
     end
 
@@ -179,5 +188,6 @@ module decode_cycle( input clk, rst, RegWriteW,FRegWriteW,
     assign FRD1_E = FRD1_D_r;
     assign FRD2_E = FRD2_D_r;
     assign FRegWrite_E = FRegWrite_r;
+    assign InstrDE=InstrD_r;
 
 endmodule
