@@ -1,5 +1,5 @@
 module Data_Memory(input wire ren, 
-    input clk,rst,WE,
+    input clk,rst_n,WE,
     output wire i_m_readdata_valid,
     output wire i_m_waitrequest,
     input wire [31:0]A,WD,
@@ -15,7 +15,7 @@ module Data_Memory(input wire ren,
             mem[A[11:2]] <= WD;
     end
 
-    assign RD = (~rst) ? 32'd0 :(ren==1'b1)? mem[A[11:2]]:32'd0;
+    assign RD = (~rst_n) ? 32'd0 :(ren==1'b1)? mem[A[11:2]]:32'd0;
     assign i_m_readdata_valid=(ren)?1'b1:1'b0;
     assign i_m_waitrequest=(ren)?1'b0:1'b1;
 //    initial begin
