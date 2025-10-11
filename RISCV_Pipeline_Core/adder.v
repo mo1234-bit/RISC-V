@@ -15,18 +15,17 @@ module adder(
   reg       [31:0] s_output_z;
 
   reg       [3:0] state;
-  parameter get_a         = 4'd0,
-            get_b         = 4'd1,
-            unpack        = 4'd2,
-            special_cases = 4'd3,
-            align         = 4'd4,
-            add_0         = 4'd5,
-            add_1         = 4'd6,
-            normalise_1   = 4'd7,
-            normalise_2   = 4'd8,
-            round         = 4'd9,
-            pack          = 4'd10,
-            put_z         = 4'd11;
+  parameter get_a_b         = 4'd0,
+            unpack        = 4'd1,
+            special_cases = 4'd2,
+            align         = 4'd3,
+            add_0         = 4'd4,
+            add_1         = 4'd5,
+            normalise_1   = 4'd6,
+            normalise_2   = 4'd7,
+            round         = 4'd8,
+            pack          = 4'd9,
+            put_z         = 4'd10;
 
   reg       [31:0] a, b, z;
   reg       [26:0] a_m, b_m;
@@ -36,13 +35,13 @@ module adder(
   reg       guard, round_bit, sticky;
   reg       [27:0] sum;
 
-  assign active = (state != get_a && output_z_stb != 1);  
+  assign active = (state != get_a_b);  
   
  
   always @(posedge clk or negedge rst)
   begin
     if (rst == 0) begin
-      state <= get_a;
+      state <= get_a_b;
       s_output_z <= 0;
       output_z_stb <= 0;
       a <= 0;
@@ -65,23 +64,17 @@ module adder(
     else begin
       case(state)
 
-        get_a:
+        get_a_b:
         begin
           output_z_stb <= 0;
           if (input_a_stb) begin
             a <= input_a;
-            state <= get_b;
           end
-        end
-
-        get_b:
-        begin
           if (input_b_stb) begin
             b <= input_b;
             state <= unpack;
           end
         end
-
         unpack:
         begin
           a_m <= {a[22 : 0], 3'd0};
@@ -260,7 +253,7 @@ module adder(
         put_z:
         begin
           s_output_z <= z;
-          state <= get_a;
+          state <= get_a_b;
           output_z_stb <= 1;
         end
     
