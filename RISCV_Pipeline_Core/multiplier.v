@@ -1,12 +1,12 @@
 module multiplier(
   input     clk,          
-  input     rst,
+  input     rst_n,
 
   input     [31:0] input_a,
   input     input_a_stb,
 
   input     [31:0] input_b,
-  input     input_b_stb,
+  input     input_b_stb,o_p_waitrequest,
   output    [31:0] output_z,
   output    reg output_z_stb,
   output    wire active
@@ -15,19 +15,18 @@ module multiplier(
   reg       [31:0] s_output_z;
 
   reg       [3:0] state;
-  parameter get_a         = 4'd0,
-            get_b         = 4'd1,
-            unpack        = 4'd2,
-            special_cases = 4'd3,
-            normalise_a   = 4'd4,
-            normalise_b   = 4'd5,
-            multiply_0    = 4'd6,
-            multiply_1    = 4'd7,
-            normalise_1   = 4'd8,
-            normalise_2   = 4'd9,
-            round         = 4'd10,
-            pack          = 4'd11,
-            put_z         = 4'd12;
+  parameter get_a_b         = 4'd0,
+            unpack        = 4'd1,
+            special_cases = 4'd2,
+            normalise_a   = 4'd3,
+            normalise_b   = 4'd4,
+            multiply_0    = 4'd5,
+            multiply_1    = 4'd6,
+            normalise_1   = 4'd7,
+            normalise_2   = 4'd8,
+            round         = 4'd9,
+            pack          = 4'd10,
+            put_z         = 4'd11;
 
   reg       [31:0] a, b, z;
   reg       [23:0] a_m, b_m, z_m;
@@ -36,13 +35,13 @@ module multiplier(
   reg       guard, round_bit, sticky;
   reg       [47:0] product;
   
-  assign active = (state != get_a && output_z_stb != 1);  
+ assign active = (state != get_a_b);  
   
  
-  always @(posedge clk or negedge rst)
+  always @(posedge clk )
   begin
-    if (rst == 0) begin
-      state <= get_a;
+    if (rst_n == 0) begin
+      state <= get_a_b;
       output_z_stb <= 0;
       s_output_z <= 0;
       a <= 0;
@@ -62,21 +61,16 @@ module multiplier(
       sticky <= 0;
       product <= 0;
     end 
-    else begin
+    else if(!o_p_waitrequest) begin
       case(state)
 
-        get_a:
+        get_a_b:
         begin
           output_z_stb <= 0;
           if (input_a_stb) begin
             a <= input_a;
-            state <= get_b;
           end
-        end
-
-        get_b:
-        begin
-          if (input_b_stb) begin
+           if (input_b_stb) begin
             b <= input_b;
             state <= unpack;
           end
@@ -90,6 +84,9 @@ module multiplier(
           b_e <= b[30 : 23] - 127;
           a_s <= a[31];
           b_s <= b[31];
+           if(!input_a_stb)
+          state<=get_a_b;
+          else
           state <= special_cases;
         end
 
@@ -251,7 +248,7 @@ module multiplier(
         put_z:
         begin
           s_output_z <= z;
-          state <= get_a;
+          state <= get_a_b;
           output_z_stb <= 1;
         end
 
