@@ -1,4 +1,4 @@
-module Register_File(input clk,rst,WE3,
+module Register_File(input clk,rst_n,WE3,
     input [4:0]A1,A2,A3,
     input [31:0]WD3,
     output [31:0]RD1,RD2);
@@ -13,12 +13,12 @@ module Register_File(input clk,rst,WE3,
     end
 
 
-   assign RD1 = (rst == 1'b0) ? 32'd0 : 
+   assign RD1 = (rst_n == 1'b0) ? 32'd0 : 
                  (A1 == 5'h00) ? 32'h00000000 : 
                  (WE3 && (A3 == A1) && (A3 != 5'h00)) ? WD3 :  
                  Register[A1]; 
                  
-    assign RD2 = (rst == 1'b0) ? 32'd0 : 
+    assign RD2 = (rst_n == 1'b0) ? 32'd0 : 
                  (A2 == 5'h00) ? 32'h00000000 :  
                  (WE3 && (A3 == A2) && (A3 != 5'h00)) ? WD3 : 
                  Register[A2];
