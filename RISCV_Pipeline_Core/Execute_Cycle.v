@@ -4,17 +4,17 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     input [6:0] OpE, 
     input [31:0] RD1_E, RD2_E,FRD1_E,FRD2_E, Imm_Ext_E,
     input [4:0] RD_E,
-    input [31:0] PCE, PCPlus4E,
+    input [31:0] PCE, PCPlus4E,InstrDE,
     input [31:0] ResultW,FPU_ResultW,
     input [1:0] ForwardA_E, ForwardB_E,
     input faddE,fsubE,fmulE,fdivE,floadE,fstoreE,fsqrtE,is_FOP,
-    input o_p_waitrequest,
+    input o_p_waitrequest,o_p_readdata_valid,
     output PCSrcE, RegWriteM, MemWriteM, ResultSrcM,
     output [4:0] RD_M,
     output [31:0] PCPlus4M, WriteDataM, ALU_ResultM,
     output [31:0] PCTargetE,
     output FRegWrite_M,
-    output [31:0]FPU_ResultEM,
+    output [31:0]FPU_ResultEM,InstrDM,
     output stall,fstoreM,floadM,FResultSrcM);
 
     wire [31:0] Src_A_ALU,Src_B_ALU,Src_A_FPU,Src_B_FPU, Src_B_FPU_interim,Src_B_ALU_interim;
@@ -24,7 +24,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     wire [31:0] BranchTarget, JumpTarget;
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r,ResultSrcE_r, FResultSrcE_r;  
     reg [4:0] RD_E_r;
-    reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r,FResultE_r;
+    reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r,FResultE_r,InstrDE_r;
     reg floadE_r, fstoreE_r;
     
     
@@ -64,7 +64,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     // FPU forwarding
     Mux_3_by_1 fpu_srca_mux (
         .a(FRD1_E),
-        .b(FPU_ResultW),
+        .b(ResultW),
         .c(FPU_ResultEM),
         .s(ForwardA_E),
         .d(Src_A_FPU)
@@ -72,7 +72,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
 
     Mux_3_by_1 fpu_srcb_mux (
         .a(FRD2_E),
-        .b(FPU_ResultW),
+        .b(ResultW),
         .c(FPU_ResultEM),
         .s(ForwardB_E),
         .d(Src_B_FPU_interim)
@@ -94,7 +94,8 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
         .B(fsubE ? {~Src_B_FPU[31], Src_B_FPU[30:0]} : Src_B_FPU),
         .FResult(FResultE),
         .FPUControl(FPUControl),
-        .stall(stall)
+        .stall(stall),
+        .o_p_readdata_valid(o_p_readdata_valid)
     );
 
     // Integer ALU Unit
@@ -151,6 +152,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
             FResultE_r <= 32'd0;
             floadE_r <= 0;
             fstoreE_r <= 0;
+            InstrDE_r<=0;
         end
         else if(!o_p_waitrequest && !stall) begin
             RegWriteE_r <= RegWriteE; 
@@ -169,6 +171,7 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
             FResultE_r <= FResultE;
             floadE_r <= floadE;
             fstoreE_r <= fstoreE;
+            InstrDE_r<=InstrDE;
         end
     end
 
@@ -186,5 +189,6 @@ module execute_cycle( input clk, rst, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,Re
     assign FPU_ResultEM = FResultE_r;
     assign floadM = floadE_r;
     assign fstoreM = fstoreE_r;
+    assign InstrDM=InstrDE_r;
 
 endmodule
