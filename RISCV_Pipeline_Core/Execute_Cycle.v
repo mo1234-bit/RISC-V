@@ -15,11 +15,11 @@ module execute_cycle( input clk, rst_n, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,
     output [31:0] PCTargetE,
     output FRegWrite_M,
     output [31:0]FPU_ResultEM,InstrDM,
-    output stall,fstoreM,floadM,FResultSrcM);
+    output stall,fstoreM,floadM,FResultSrcM,finish_div1);
 
     wire [31:0] Src_A_ALU,Src_B_ALU,Src_A_FPU,Src_B_FPU, Src_B_FPU_interim,Src_B_ALU_interim;
     wire [31:0] ResultE,FResultE;
-    wire ZeroE, NegativeE, OverFlowE, CarryE,finish2;
+    wire ZeroE, NegativeE, OverFlowE, CarryE,finish2,finish_div2;
     wire BranchCondition,finish_adder, finish_div, finish_mul;
     wire [31:0] BranchTarget, JumpTarget;
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r,ResultSrcE_r, FResultSrcE_r;  
@@ -120,9 +120,11 @@ module execute_cycle( input clk, rst_n, RegWriteE,FRegWrite_E,ALUSrcE,MemWriteE,
         .c(BranchTarget)
     );
 
-    wire finish1=finish_div||finish_mul||finish_adder;
+    wire finish1=finish_mul||finish_adder;
      D #(1)flip(.in(finish1),.out(finish2),.clk(clk),.rst_n(rst_n));
     D #(1)flip1(.in(finish2),.out(finish),.clk(clk),.rst_n(rst_n));
+    D #(1)flip2(.in(finish_div),.out(finish_div2),.clk(clk),.rst_n(rst_n));
+    D #(1)flip3(.in(finish_div2),.out(finish_div1),.clk(clk),.rst_n(rst_n));
     assign JumpTarget = (OpE == 7'b1100111) ? (Src_A_ALU + Imm_Ext_E) :  
                        (PCE + Imm_Ext_E);                                  
 
