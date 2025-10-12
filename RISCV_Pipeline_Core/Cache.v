@@ -283,6 +283,7 @@ module set(clk,
     simple_ram #(.width(8), .widthad(cache_entry)) ram00_0(clk, entry, write && word_en[0]  && byte_en[0], writedata[ 7: 0], entry, readdata[ 7:0]);
     assign write_tag_data = (read_miss) ? {1'b0, 1'b1, o_tag} : (modify || miss ) ? {1'b1, 1'b1, o_tag} : {1'b1, 1'b1, i_tag};
     simple_ram #(.width(25-cache_entry), .widthad(cache_entry)) ram_tag(clk, entry, write, write_tag_data, entry, {dirty, valid, i_tag});
+	`ifdef SIM
     integer i;
 
     initial begin
@@ -290,4 +291,5 @@ module set(clk,
 	        ram_tag.mem[i] = 0;
         end
     end
+	`endif
 endmodule
