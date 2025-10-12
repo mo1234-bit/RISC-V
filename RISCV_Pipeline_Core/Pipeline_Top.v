@@ -88,7 +88,8 @@ module Pipeline_top1(input clk, rst_n,
         .fResultW(FResultW),
         .DRDW(DRDW),
         .stallf(stall),
-        .finish(finish)
+        .finish(finish),
+        .finish_div1(finish_div1)
     );
 
     execute_cycle Execute (
@@ -144,7 +145,8 @@ module Pipeline_top1(input clk, rst_n,
         .InstrDE(InstrDE),
         .InstrDM(InstrDM),
         .o_p_readdata_valid(o_p_readdata_valid),
-        .finish(finish)
+        .finish(finish),
+        .finish_div1(finish_div1)
     );
 
     memory_cycle Memory (
