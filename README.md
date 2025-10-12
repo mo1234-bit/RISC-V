@@ -104,7 +104,6 @@ Each section below can be expanded to view the corresponding assembly code.
 # 🧩 RISC-V Test Programs
 
 This repository contains a set of **RISC-V assembly test programs** covering integer, branch, jump, memory, and floating-point operations.  
-Each section below can be expanded to view the corresponding assembly code.
 
 ---
 
@@ -119,12 +118,6 @@ Each section below can be expanded to view the corresponding assembly code.
 0062F4B3    and     x9, x5, x6           # x9 = x5 & x6 = 0x1 (binary: 101 & 011 = 001)
 0062E533    or      x10, x5, x6          # x10 = x5 | x6 = 0x7 (binary: 101 | 011 = 111)
 0062A5B3    slt     x11, x5, x6          # x11 = (x5 < x6) ? 1 : 0 = 0 (5 not < 3)
-</details>
-
-<details>
- <summary><b>🔁 TEST PROGRAM 2: Branch Instructions</b></summary>
-
-```assembly
 0032C463    blt     x5, x6, skip      # if (x5 < x6) PC = PC + 8, else continue
 06400613    addi    x12, x0, 100      # x12 = 100 (executed if branch not taken)
 00000013    nop                       # No operation
@@ -133,12 +126,6 @@ Each section below can be expanded to view the corresponding assembly code.
 # skip:
 00500713    addi    x14, x0, 5        # x14 = 5
 00e68663    beq     x13, x14, end     # if (x13 == x14) jump to end
-</details>
-
-<details>
- <summary><b>🚀 TEST PROGRAM 3: Jump Instructions</b></summary>
-
-```assembly
 0C800793    addi    x15, x0, 200      # x15 = 200
 00000013    nop                       # No operation
 020000EF    jal     x1, func          # Jump to func, save return address in x1
@@ -154,12 +141,6 @@ Each section below can be expanded to view the corresponding assembly code.
 00000013    nop
 00000013    nop
 00000013    nop
-</details>
-
-<details>
- <summary><b>💾 TEST PROGRAM 4: Memory Operations</b></summary>
-
-```assembly
 00500293    addi    x5, x0, 5         # x5 = 5
 00300313    addi    x6, x0, 3         # x6 = 3
 40A00397    lui     x7, 0x40A00       # x7 = 0x40A00000 (upper immediate)
@@ -169,15 +150,8 @@ Each section below can be expanded to view the corresponding assembly code.
 00742223    sw      x7, 4(x8)         # Memory[4] = x7
 40000397    lui     x7, 0x40000       # x7 = 0x40000000
 00742423    sw      x7, 8(x8)         # Memory[8] = x7
-
 00000013    nop
 00000013    nop
-</details>
-
-<details>
-<summary><b>🧠 TEST PROGRAM 5: Floating-Point Operations</b></summary>
-
-```assembly
 00402107    flw     f2, 4(x0)         # f2 = Memory[4] (load FP value)
 00802187    flw     f3, 8(x0)         # f3 = Memory[8] (load FP value)
 00310253    fadd.s  f4, f2, f3        # f4 = f2 + f3 (FP addition)
