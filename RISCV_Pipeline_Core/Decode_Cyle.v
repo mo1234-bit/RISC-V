@@ -1,4 +1,4 @@
-module decode_cycle( input clk, rst_n, RegWriteW,FRegWriteW,stallf,finish,
+module decode_cycle( input clk, rst_n, RegWriteW,FRegWriteW,stallf,finish,finish_div1,
     input [4:0] RDW,DRDW,
     input [31:0] InstrDe, PCD, PCPlus4D, ResultW,
     output RegWriteE,ALUSrcE,MemWriteE,ResultSrcE,BranchE,JumpE,
@@ -68,7 +68,7 @@ module decode_cycle( input clk, rst_n, RegWriteW,FRegWriteW,stallf,finish,
         .rs1(InstrD[19:15]),
         .rs2(InstrD[24:20]),
         .rd((finish)?DRDW:RDW),
-        .WE((FPUControl!=3'b000)?finish:FRegWriteW),
+        .WE((finish_div1)?1'b1:(FPUControl!=3'b000)?finish:FRegWriteW),
         .F_RD1(FRD1_D),
         .F_RD2(FRD2_D)
     );
