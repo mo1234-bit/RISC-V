@@ -10,11 +10,17 @@ A fully functional 5-stage pipelined RISC-V processor implementing the RV32I bas
 ## Core Features
 
 ✅ 5-Stage Pipeline: Fetch → Decode → Execute → Memory → Writeback
+
 ✅ RISC-V RV32I Base ISA: Complete integer instruction support
+
 ✅ RV32F Extension: Single-precision floating-point operations
+
 ✅ IEEE 754 Compliant FPU: Add, subtract, multiply, divide, square root
+
 ✅ 4-Way Set-Associative Cache: Write-back policy with dirty bit tracking
+
 ✅ Hazard Detection Unit: Comprehensive data hazard detection
+
 ✅ Data Forwarding: Both integer and floating-point register forwarding
 ✅ Branch Handling: Jump and branch target calculation
 ✅ Multi-Cycle Operation Support: Synchronized stall mechanism for FPU
