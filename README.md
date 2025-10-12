@@ -67,8 +67,6 @@ RV32F - Single-Precision Floating-Point
 
 ✅ Arithmetic: FADD.S, FSUB.S, FMUL.S, FDIV.S
 
-✅ Square Root: FSQRT.S
-
 ✅ Load/Store: FLW, FSW
 
 🧪 Testing & Verification
