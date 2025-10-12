@@ -104,9 +104,10 @@ This repository contains a set of **RISC-V assembly test programs** covering int
 ---
 
 <details>
-<summary><b>🧮 TEST PROGRAM 1: Integer Operations</b></summary>
+<summary><b>🧮 TEST PROGRAM  </b></summary>
 
 ```assembly
+# Integer Operations
 00500293    addi    x5, x0, 5            # x5 = 0 + 5 = 5
 00300313    addi    x6, x0, 3            # x6 = 0 + 3 = 3
 006283B3    add     x7, x5, x6           # x7 = x5 + x6 = 8
