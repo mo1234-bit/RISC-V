@@ -102,19 +102,19 @@ Corner Cases: Edge conditions verified (zero operations, denormals, etc.)
 # TEST PROGRAM 1: Integer Operations
 # ============================================
 
-00500293    addi    x5, x0, 5         # x5 = 0 + 5 = 5
+00500293    addi    x5, x0, 5            # x5 = 0 + 5 = 5
 
-00300313    addi    x6, x0, 3         # x6 = 0 + 3 = 3
+00300313    addi    x6, x0, 3            # x6 = 0 + 3 = 3
 
-006283B3    add     x7, x5, x6        # x7 = x5 + x6 = 8
+006283B3    add     x7, x5, x6           # x7 = x5 + x6 = 8
 
-40628433    sub     x8, x5, x6        # x8 = x5 - x6 = 2
+40628433    sub     x8, x5, x6           # x8 = x5 - x6 = 2
 
-0062F4B3    and     x9, x5, x6        # x9 = x5 & x6 = 0x1 (binary: 101 & 011 = 001)
+0062F4B3    and     x9, x5, x6           # x9 = x5 & x6 = 0x1 (binary: 101 & 011 = 001)
 
-0062E533    or      x10, x5, x6       # x10 = x5 | x6 = 0x7 (binary: 101 | 011 = 111)
+0062E533    or      x10, x5, x6          # x10 = x5 | x6 = 0x7 (binary: 101 | 011 = 111)
 
-0062A5B3    slt     x11, x5, x6       # x11 = (x5 < x6) ? 1 : 0 = 0 (5 not < 3)
+0062A5B3    slt     x11, x5, x6          # x11 = (x5 < x6) ? 1 : 0 = 0 (5 not < 3)
 
 
 # ============================================
