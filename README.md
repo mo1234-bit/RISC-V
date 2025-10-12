@@ -95,10 +95,6 @@ Integration Testing: Pipeline stages tested together
 System Testing: Complete programs executed
 
 Corner Cases: Edge conditions verified (zero operations, denormals, etc.)
-# 🧩 RISC-V Test Programs
-
-This repository contains a set of **RISC-V assembly test programs** covering integer, branch, jump, memory, and floating-point operations.  
-Each section below can be expanded to view the corresponding assembly code.
 
 ---
 # 🧩 RISC-V Test Programs
@@ -141,6 +137,7 @@ This repository contains a set of **RISC-V assembly test programs** covering int
 00000013    nop
 00000013    nop
 00000013    nop
+# Memory Operations
 00500293    addi    x5, x0, 5         # x5 = 5
 00300313    addi    x6, x0, 3         # x6 = 3
 40A00397    lui     x7, 0x40A00       # x7 = 0x40A00000 (upper immediate)
@@ -152,6 +149,7 @@ This repository contains a set of **RISC-V assembly test programs** covering int
 00742423    sw      x7, 8(x8)         # Memory[8] = x7
 00000013    nop
 00000013    nop
+# Floating-Point Operations
 00402107    flw     f2, 4(x0)         # f2 = Memory[4] (load FP value)
 00802187    flw     f3, 8(x0)         # f3 = Memory[8] (load FP value)
 00310253    fadd.s  f4, f2, f3        # f4 = f2 + f3 (FP addition)
