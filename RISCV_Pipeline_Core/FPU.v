@@ -125,7 +125,7 @@ module FPU (
     // ------------------------
     fsqrt_newton_raphson sqr(
         .clk(clk),
-        .reset(rst_n),
+        .rst_n(rst_n),
         .start(A_ack_sqr && B_ack_sqr), // Start pulse (1 cycle)
         .operand(A),                     // Input operand
         .result(FResult_sqr),            // Result
@@ -134,3 +134,4 @@ module FPU (
     );
 
 endmodule
+
