@@ -29,7 +29,7 @@ module execute_cycle(
     output [31:0] PCTargetE,
     output FRegWrite_M,
     output [31:0] FPU_ResultEM, InstrDM,
-    output stall_f, fstoreM, floadM, FResultSrcM
+    output stall_f, FResultSrcM
 );
 
     // ----------------------------
@@ -50,7 +50,7 @@ module execute_cycle(
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r, ResultSrcE_r, FResultSrcE_r;
     reg [4:0] RD_E_r;
     reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r, FResultE_r, InstrDE_r;
-    reg floadE_r, fstoreE_r;
+
 
     wire stall_f_buf;
     wire [2:0] FPUControl;
@@ -207,8 +207,6 @@ module execute_cycle(
             ResultE_r <= 32'h00000000;
             FRegWrite_E_r <= 1'b0;
             FResultE_r <= 32'd0;
-            floadE_r <= 0;
-            fstoreE_r <= 0;
             InstrDE_r <= 0;
         end
         else if((!stallE || pass) && (!stall_f || pass)) begin
@@ -225,8 +223,6 @@ module execute_cycle(
                          ResultE;                               // Default ALU result
             FRegWrite_E_r <= FRegWrite_E;
             FResultE_r <= FResultE;
-            floadE_r <= floadE;
-            fstoreE_r <= fstoreE;
             InstrDE_r <= InstrDE;
         end
     end
@@ -245,8 +241,6 @@ module execute_cycle(
     assign ALU_ResultM = ResultE_r;
     assign FRegWrite_M = FRegWrite_E_r;
     assign FPU_ResultEM = FResultE_r;
-    assign floadM = floadE_r;
-    assign fstoreM = fstoreE_r;
     assign InstrDM = InstrDE_r;
 
 endmodule
