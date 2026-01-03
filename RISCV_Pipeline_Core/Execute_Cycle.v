@@ -29,7 +29,12 @@ module execute_cycle(
     output [31:0] PCTargetE,
     output FRegWrite_M,
     output [31:0] FPU_ResultEM, InstrDM,
-    output stall_f, FResultSrcM
+    output stall_f, fstoreM, floadM, FResultSrcM,
+
+  //  Branch prediction feedback signals
+    output exec_is_branch,        // Is this instruction a branch?
+    output exec_actual_taken,     // Was branch taken?
+    output [31:0] exec_pc         // PC of this branch
 );
 
     // ----------------------------
@@ -38,7 +43,7 @@ module execute_cycle(
     wire [31:0] Src_A_ALU, Src_B_ALU;             // Integer ALU operands
     wire [31:0] Src_A_FPU, Src_B_FPU, Src_B_FPU_interim, Src_B_ALU_interim; // FPU operands
     wire [31:0] ResultE, FResultE;               // ALU and FPU results
-
+  
     // Status signals from ALU
     wire ZeroE, NegativeE, OverFlowE, CarryE;
     wire finish2, finish_div2, finish_adder, finish_div, finish_mul, finish_sqr;
@@ -50,11 +55,13 @@ module execute_cycle(
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r, ResultSrcE_r, FResultSrcE_r;
     reg [4:0] RD_E_r;
     reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r, FResultE_r, InstrDE_r;
-
+    reg floadE_r, fstoreE_r;
 
     wire stall_f_buf;
     wire [2:0] FPUControl;
 
+      // A branch instruction is being executed
+    assign exec_is_branch = BranchE;
     // ----------------------------
     // Determine FPU operation type
     // ----------------------------
@@ -192,6 +199,11 @@ module execute_cycle(
 
     assign PCTargetE = JumpE ? JumpTarget : BranchTarget;
 
+    // Was the branch actually taken?
+       assign exec_actual_taken = BranchE & BranchCondition;
+    
+    // PC of the branch instruction
+    assign exec_pc = PCE;
     // ----------------------------
     // Pipeline registers to Memory stage
     // ----------------------------
@@ -207,6 +219,8 @@ module execute_cycle(
             ResultE_r <= 32'h00000000;
             FRegWrite_E_r <= 1'b0;
             FResultE_r <= 32'd0;
+            floadE_r <= 0;
+            fstoreE_r <= 0;
             InstrDE_r <= 0;
         end
         else if((!stallE || pass) && (!stall_f || pass)) begin
@@ -223,6 +237,8 @@ module execute_cycle(
                          ResultE;                               // Default ALU result
             FRegWrite_E_r <= FRegWrite_E;
             FResultE_r <= FResultE;
+            floadE_r <= floadE;
+            fstoreE_r <= fstoreE;
             InstrDE_r <= InstrDE;
         end
     end
@@ -230,7 +246,7 @@ module execute_cycle(
     // ----------------------------
     // Output assignments to Memory stage
     // ----------------------------
-    assign PCSrcE = (BranchE & BranchCondition) | JumpE;
+    assign PCSrcE = exec_actual_taken| JumpE;
     assign RegWriteM = RegWriteE_r;
     assign MemWriteM = MemWriteE_r;
     assign ResultSrcM = ResultSrcE_r;
@@ -241,6 +257,8 @@ module execute_cycle(
     assign ALU_ResultM = ResultE_r;
     assign FRegWrite_M = FRegWrite_E_r;
     assign FPU_ResultEM = FResultE_r;
+    assign floadM = floadE_r;
+    assign fstoreM = fstoreE_r;
     assign InstrDM = InstrDE_r;
 
 endmodule
