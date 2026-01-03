@@ -1,7 +1,3 @@
-// ================================================================
-// COMPLETE FIX: Decode_Cycle.v needs to flush on misprediction!
-// ================================================================
-
 module decode_cycle(
     input clk, rst_n,
     input RegWriteW, FRegWriteW,
@@ -20,7 +16,6 @@ module decode_cycle(
     input stall, FlushD,
     output faddE, fsubE, fmulE, fdivE, floadE, fstoreE, fsqrtE, FRegWrite_E, is_FOP, FResultSrcE,
     
-    // NEW: Misprediction flush signal
     input mispredict  // From Fetch stage
 );
 
@@ -49,9 +44,7 @@ module decode_cycle(
                         (fsqrtE)? 3'b100 :
                         3'b000;
     
-    // ================================================================
-    // CRITICAL FIX: Apply FlushD from Fetch (for mispredictions)
-    // ================================================================
+ 
     assign InstrD = (FlushD || mispredict) ? 32'h00000013 : InstrDe;  // NOP if flushed
     
     assign is_FOP = (faddr || fsubr || fmulr || fdivr || fsqrtr) ? 1'b1 : 1'b0;
@@ -110,9 +103,6 @@ module decode_cycle(
         .ImmSrc(ImmSrcD)
     );
     
-    // ================================================================
-    // CRITICAL FIX: Flush pipeline register on misprediction
-    // ================================================================
     always @(posedge clk) begin
         if (rst_n == 1'b0) begin
             RegWriteD_r <= 1'b0;
@@ -137,9 +127,7 @@ module decode_cycle(
             InstrD_r <= 0;
         end
         else if ((!stall && !stall_f) || (is_FOP && pass)) begin
-            // ========================================================
-            // CRITICAL: Insert NOP if misprediction or flush
-            // ========================================================
+        
             if (FlushD || mispredict) begin
                 // Flush: Insert NOP into Execute stage
                 RegWriteD_r <= 1'b0;
