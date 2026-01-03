@@ -11,9 +11,9 @@ module Pipeline_top1(
     wire RegWriteW, RegWriteE;
     wire ALUSrcE, MemWriteE, ResultSrcE;
     wire BranchE, JumpE;
-    wire ResultSrcR, pass_2;
+    wire ResultSrcR;
     wire RegWriteM, MemWriteM, ResultSrcM, ResultSrcW;
-    wire finish, pass, write_ready, read_ready, stall_WB, finish1;
+    wire finish, pass, finish1;
     wire [3:0] ALUControlE;
     wire [2:0] funct3E;
     wire [6:0] OpE;
@@ -31,7 +31,7 @@ module Pipeline_top1(
     wire [31:0] InstrDM, InstrDE, instr;
     wire [31:0] PCE, PCPlus4E, PCPlus4M, WriteDataM, ALU_ResultM;
     wire [31:0] PCPlus4W, ALU_ResultW, ReadDataW, FPU_ResultEW, InstrME;
-    wire [4:0] RS1_E, RS2_E, DRDW, tag_data, mem_tag, DRDW_1, DRDW_2, DRDW_3;
+    wire [4:0] RS1_E, RS2_E, DRDW;
     wire [1:0] ForwardBE, ForwardAE;
 
     // ----------------------------
@@ -39,7 +39,7 @@ module Pipeline_top1(
     // ----------------------------
     wire faddE, fsubE, fmulE, fdivE, floadE, fstoreE, fsqrtE, FRegWrite_E;
     wire [31:0] FPU_ResultEM, FRD1_E, FRD2_E, FResultW;
-    wire FRegWrite_M, FRegWriteMW, floadM, fstoreM;
+    wire FRegWrite_M, FRegWriteMW;
     wire FResultSrcE, FResultSrcM, FResultSrcW;
     
     // Flags for store instructions
@@ -175,8 +175,6 @@ module Pipeline_top1(
         .FRegWrite_E(FRegWrite_E),
         .FRegWrite_M(FRegWrite_M),
         .FPU_ResultEM(FPU_ResultEM),
-        .floadM(floadM),
-        .fstoreM(fstoreM),
         .stall_f(stall),
         .FPU_ResultW(FResultW),
         .is_FOP(is_FOP),
