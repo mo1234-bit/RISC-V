@@ -2,7 +2,7 @@ module fsqrt_newton_raphson #(
     parameter ITERATIONS = 4  // Number of Newton-Raphson iterations
 )(
     input wire clk,
-    input wire reset,
+    input wire rst_n,
     input wire start,              // Pulse high for 1 cycle to start
     input wire [31:0] operand,     // Input value (IEEE-754)
     output reg [31:0] result,      // Output sqrt result
@@ -58,7 +58,7 @@ module fsqrt_newton_raphson #(
     // FDIV instance
      divider fdiv(
         .clk(clk),          
-        .rst_n(reset),
+        .rst_n(rst_n),
         .input_a(fdiv_a),
         .input_a_stb(fdiv_start),
         .input_b(fdiv_b),
@@ -73,7 +73,7 @@ module fsqrt_newton_raphson #(
    
       adder fadder(
         .clk(clk),          
-        .rst_n(reset),
+        .rst_n(rst_n),
         .input_a(fadd_a),
         .input_a_stb(fadd_start),
         .input_b(fadd_b),
@@ -86,7 +86,7 @@ module fsqrt_newton_raphson #(
 
   multiplier fmul(
         .clk(clk),          
-        .rst_n(reset),
+        .rst_n(rst_n),
         .input_a(fmul_a),
         .input_a_stb(fmul_start),
         .input_b(fmul_b),
@@ -102,7 +102,7 @@ module fsqrt_newton_raphson #(
     
     // Main state machine - Sequential logic
     always @(posedge clk) begin
-        if (!reset) begin
+        if (!rst_n) begin
             state <= IDLE;
             done <= 1'b0;
             busy <= 1'b0;
@@ -294,3 +294,4 @@ module sqrt_lut (
     end
 
 endmodule
+
