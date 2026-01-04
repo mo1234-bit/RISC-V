@@ -61,7 +61,8 @@ module fetch_cycle(
         
         // Misprediction handling
         .mispredict(mispredict),
-        .correct_target(correct_target)
+        .correct_target(correct_target),
+        .stall(stall)
     );
     // ================================================================
     //  PC Selection with Prediction
@@ -72,7 +73,7 @@ module fetch_cycle(
     // 3. Branch prediction
     // 4. Sequential (PC + 4)
     
-    assign PCNext = (mispredict) ? (correct_target-4) :      // Fix misprediction
+    assign PCNext = (mispredict) ? (correct_target) :      // Fix misprediction
                     (JumpE) ? PCTargetE :                // Unconditional jump
                     (predict_taken) ? predict_target :   // Predicted branch
                     PCPlus4F;                            // Sequential
@@ -81,7 +82,7 @@ module fetch_cycle(
     Mux PC_MUX (
         .a(PCPlus4F),
         .b(PCNext),
-        .s(PCSrcE | JumpE | mispredict),
+        .s(PCSrcE | JumpE | mispredict | predict_taken),
         .c(PC_F)
     );
 
