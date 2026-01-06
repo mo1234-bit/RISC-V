@@ -1,4 +1,4 @@
-module fsqrt_ultrafast(
+module fsqrt(
     input wire clk,
     input wire reset,
     input wire start,
@@ -206,3 +206,4 @@ module fsqrt_ultrafast(
         end
     end
 endmodule
+
