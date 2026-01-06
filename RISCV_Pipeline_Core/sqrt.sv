@@ -1,242 +1,199 @@
-module fsqrt_newton_raphson #(
-    parameter ITERATIONS = 4  // Number of Newton-Raphson iterations
-)(
+module fsqrt_ultrafast(
     input wire clk,
-    input wire rst_n,
-    input wire start,              // Pulse high for 1 cycle to start
-    input wire [31:0] operand,     // Input value (IEEE-754)
-    output reg [31:0] result,      // Output sqrt result
-    output reg done,               // High when complete
-    output reg busy              // High while computing
-    
+    input wire reset,
+    input wire start,
+    input wire [31:0] operand,
+    output reg [31:0] result,
+    output reg done,
+    output reg busy
 );
 
-    // State definitions
-    localparam [3:0] IDLE         = 4'd0;
-    localparam [3:0] CHECK_SPECIAL = 4'd1;
-    localparam [3:0] INIT_GUESS   = 4'd2;
-    localparam [3:0] DIV_START    = 4'd3;
-    localparam [3:0] DIV_WAIT     = 4'd4;
-    localparam [3:0] ADD_START    = 4'd5;
-    localparam [3:0] ADD_WAIT     = 4'd6;
-    localparam [3:0] MUL_START    = 4'd7;
-    localparam [3:0] MUL_WAIT     = 4'd8;
-    localparam [3:0] FINISH       = 4'd9;
+    localparam [3:0] IDLE = 4'd0, CHECK = 4'd1, INIT = 4'd2;
+    localparam [3:0] ITER1 = 4'd3, ITER1B = 4'd4, ITER2 = 4'd5, FINALIZE = 4'd6;
+    localparam [3:0] MULTIPLY = 4'd7, ITER3 = 4'd8, ITER3B = 4'd9, EXTRACT = 4'd10;
+    localparam [3:0] FINALIZE2 = 4'd11, FINAL_MULT = 4'd12, FINAL_EXTRACT = 4'd13, DONE_STATE = 4'd14;
 
-    // State register
-    reg [3:0] state, next_state;
-    reg [3:0] debug_state;
-    // Iteration counter
-    reg [2:0] iter_count;
+    reg [3:0] state;
+    wire sign = operand[31];
+    wire [7:0] exp_in = operand[30:23];
+    wire [22:0] mant_in = operand[22:0];
     
-    // Working registers
-    reg [31:0] x;           // Original input
-    reg [31:0] y;           // Current approximation
-    reg [31:0] temp;        // Temporary storage
+    reg [7:0] exp_result;
+    reg [47:0] x;
+    reg [47:0] operand_q;
+    reg [47:0] temp;
+    reg [47:0] y_times_x_sq;
     
-    // IEEE-754 constant: 0.5
-    wire [31:0] HALF = 32'h3F000000;
+    // LUT stores 1/sqrt(x) for x in [1.0, 2.0) in Q0.24 format
+    reg [23:0] rsqrt_lut [0:511];
     
-    // FPU interface signals
-    reg fdiv_start, fadd_start, fmul_start;
-    reg [31:0] fdiv_a, fdiv_b;
-    reg [31:0] fadd_a, fadd_b;
-    reg [31:0] fmul_a, fmul_b;
-    wire [31:0] fdiv_result, fadd_result, fmul_result;
-    wire fdiv_done, fadd_done, fmul_done;
-    wire fdiv_busy, fadd_busy, fmul_busy;
-
-    // Initial guess from LUT
-    wire [31:0] initial_guess;
+    wire signed [8:0] exp_unbiased = exp_in - 8'd127;
+    wire exp_odd = exp_unbiased[0];
+    wire [8:0] index = mant_in[22:14];
     
-    // Instantiate lookup table for initial guess
-    sqrt_lut lut_inst (
-        .operand(x),
-        .initial_guess(initial_guess)
-    );
+    integer i;
+    real lut_input, rsqrt_val;
+    initial begin
+        for (i = 0; i < 512; i = i + 1) begin
+            lut_input = 1.0 + (i / 512.0);
+            rsqrt_val = 1.0 / $sqrt(lut_input);
+            rsqrt_lut[i] = $rtoi(rsqrt_val * (2.0 ** 23));
+        end
+    end
     
-    // FDIV instance
-     divider fdiv(
-        .clk(clk),          
-        .rst_n(rst_n),
-        .input_a(fdiv_a),
-        .input_a_stb(fdiv_start),
-        .input_b(fdiv_b),
-        .input_b_stb(fdiv_start),
-        .output_z(fdiv_result),
-        .output_z_stb(fdiv_done),
-        .active(fdiv_busy),
-        .o_p_waitrequest(1'b0)
-    );
-
-    
-   
-      adder fadder(
-        .clk(clk),          
-        .rst_n(rst_n),
-        .input_a(fadd_a),
-        .input_a_stb(fadd_start),
-        .input_b(fadd_b),
-        .input_b_stb(fadd_start),
-        .output_z(fadd_result),
-        .output_z_stb(fadd_done),
-        .active(fadd_busy),
-        .o_p_waitrequest(1'b0)
-    );
-
-  multiplier fmul(
-        .clk(clk),          
-        .rst_n(rst_n),
-        .input_a(fmul_a),
-        .input_a_stb(fmul_start),
-        .input_b(fmul_b),
-        .input_b_stb(fmul_start),
-        .output_z(fmul_result),
-        .output_z_stb(fmul_done),
-        .active(fmul_busy),
-        .o_p_waitrequest(1'b0)
-    );
-    
-    // Debug output
-    assign debug_state = state;
-    
-    // Main state machine - Sequential logic
     always @(posedge clk) begin
-        if (!rst_n) begin
+        if (!reset) begin
             state <= IDLE;
             done <= 1'b0;
             busy <= 1'b0;
             result <= 32'h0;
-            iter_count <= 3'd0;
-            x <= 32'h0;
-            y <= 32'h0;
-            temp <= 32'h0;
-            
-            // Clear all FPU start signals
-            fdiv_start <= 1'b0;
-            fadd_start <= 1'b0;
-            fmul_start <= 1'b0;
-        end else begin
-            // Default: clear all start pulses (they should only be high for 1 cycle)
-            fdiv_start <= 1'b0;
-            fadd_start <= 1'b0;
-            fmul_start <= 1'b0;
-            
+        end 
+        else begin
             case (state)
                 IDLE: begin
                     done <= 1'b0;
                     busy <= 1'b0;
-                    iter_count <= 3'd0;
-                    
-                    if (start && !done) begin
-                        x <= operand;
+                    if (start) begin
                         busy <= 1'b1;
-                        state <= CHECK_SPECIAL;
+                        state <= CHECK;
                     end
                 end
                 
-                CHECK_SPECIAL: begin
-                    // Check for special cases
+                CHECK: begin
+                    if (operand[30:0] == 31'h0) begin
+                        result <= 32'h00000000;
+                        done <= 1'b1;
+                        busy <= 1'b0;
+                        state <= IDLE;
+                    end else if (operand == 32'h80000000) begin
+                        result <= 32'h80000000;
+                        done <= 1'b1;
+                        busy <= 1'b0;
+                        state <= IDLE;
+                    end else if (sign) begin
+                        result <= 32'h7FC00000;
+                        done <= 1'b1;
+                        busy <= 1'b0;
+                        state <= IDLE;
+                    end else if (exp_in == 8'hFF && mant_in == 23'h0) begin
+                        result <= 32'h7F800000;
+                        done <= 1'b1;
+                        busy <= 1'b0;
+                        state <= IDLE;
+                    end else if (exp_in == 8'hFF) begin
+                        result <= operand;
+                        done <= 1'b1;
+                        busy <= 1'b0;
+                        state <= IDLE;
+                    end else begin
+                        state <= INIT;
+                    end
+                end
+                
+                INIT: begin
+                    exp_result <= ((exp_unbiased - exp_odd) >>> 1) + 8'd127;
                     
-                    // Case 1: Zero (±0)
-                    if (x[30:0] == 31'h0 || !start) begin
-                        result <= {x[31], 31'h0};  // sqrt(±0) = ±0
-                        done <= 1'b1;
-                        busy <= 1'b0;
-                        state <= IDLE;
-                    end 
-                    // Case 2: Negative number (not zero)
-                    else if (x[31] == 1'b1) begin
-                        result <= 32'h7FC00000;    // sqrt(negative) = NaN (quiet NaN)
-                        done <= 1'b1;
-                        busy <= 1'b0;
-                        state <= IDLE;
-                    end 
-                    // Case 3: Infinity
-                    else if (x[30:23] == 8'hFF && x[22:0] == 23'h0) begin
-                        result <= 32'h7F800000;    // sqrt(+inf) = +inf
-                        done <= 1'b1;
-                        busy <= 1'b0;
-                        state <= IDLE;
-                    end 
-                    // Case 4: NaN
-                    else if (x[30:23] == 8'hFF && x[22:0] != 23'h0) begin
-                        result <= x;               // sqrt(NaN) = NaN (propagate)
-                        done <= 1'b1;
-                        busy <= 1'b0;
-                        state <= IDLE;
-                    end 
-                    // Case 5: Normal number
-                    else begin
-                        state <= INIT_GUESS;
+                    if (exp_odd) begin
+                        operand_q <= {22'd0, 1'b1, mant_in, 2'd0};
+                    end else begin
+                        operand_q <= {23'd0, 1'b1, mant_in, 1'd0};
                     end
-                end
-                
-                INIT_GUESS: begin
-                    // Get initial approximation from LUT
-                    y <= initial_guess;
-                    iter_count <= 3'd0;
-                    state <= DIV_START;
-                end
-                
-                DIV_START: begin
-                    // Newton-Raphson iteration: y_new = 0.5 * (y + x/y)
-                    // Step 1: Compute x / y
-                    fdiv_start <= 1'b1;
-                    fdiv_a <= x;
-                    fdiv_b <= y;
-                    state <= DIV_WAIT;
-                end
-                
-                DIV_WAIT: begin
-                    // Wait for division to complete
-                    if (fdiv_done) begin
-                        temp <= fdiv_result;  // temp = x/y
-                        state <= ADD_START;
+                    
+                    // LUT is Q1.23 (bit 23 = 1.0), convert to Q24.24 (bit 24 = 1.0)
+                    // Shift left by 1: {rsqrt_lut[index], 24'd0} gives bit 47, we want bit 24
+                    // So we need to shift right by 23 to move bit 47 to bit 24
+                    // Actually: {lut, 24'd0} puts lut[23] at bit 47, shift right 23 puts it at bit 24
+                    x <= {24'd0, rsqrt_lut[index]} << 1;
+                    
+                    if (exp_odd) begin
+                        // 1/sqrt(2) = 0.707... in Q1.23 is 0x5A827A (5931642 decimal)
+                        temp <= {24'd0, 24'd5931642} << 1;
+                    end else begin
+                        temp <= 48'd0;
                     end
+                    state <= ITER1;
                 end
                 
-                ADD_START: begin
-                    // Step 2: Compute y + (x/y)
-                    fadd_start <= 1'b1;
-                    fadd_a <= y;
-                    fadd_b <= temp;
-                    state <= ADD_WAIT;
-                end
-                
-                ADD_WAIT: begin
-                    // Wait for addition to complete
-                    if (fadd_done) begin
-                        temp <= fadd_result;  // temp = y + x/y
-                        state <= MUL_START;
+                ITER1: begin
+                    if (exp_odd) begin
+                        x <= (({24'd0, x} * {24'd0, temp}) >> 24);
                     end
+                    state <= ITER1B;
                 end
                 
-                MUL_START: begin
-                    // Step 3: Compute (y + x/y) * 0.5
-                    fmul_start <= 1'b1;
-                    fmul_a <= temp;
-                    fmul_b <= HALF;
-                    state <= MUL_WAIT;
+                ITER1B: begin
+                    temp <= (({24'd0, x} * {24'd0, x}) >> 24);
+                    state <= ITER2;
                 end
                 
-                MUL_WAIT: begin
-                    // Wait for multiplication to complete
-                    if (fmul_done) begin
-                        y <= fmul_result;         // Update y with new approximation
-                        iter_count <= iter_count + 3'd1;
-                        
-                        // Check if we've done enough iterations
-                        if (iter_count >= (ITERATIONS - 1)) begin
-                            state <= FINISH;
-                        end else begin
-                            state <= DIV_START;   // Do another iteration
-                        end
+                ITER2: begin
+                    y_times_x_sq <= (({24'd0, operand_q} * {24'd0, temp}) >> 24);
+                    state <= FINALIZE;
+                end
+                
+                FINALIZE: begin
+                    temp <= (48'd3 << 24) - y_times_x_sq;
+                    state <= MULTIPLY;
+                end
+                
+                MULTIPLY: begin
+                    x <= (({24'd0, x} * {24'd0, temp}) >> 25);
+                    state <= ITER3;
+                end
+                
+                ITER3: begin
+                    state <= ITER3B;
+                end
+                
+                ITER3B: begin
+                    temp <= (({24'd0, x} * {24'd0, x}) >> 24);
+                    state <= EXTRACT;
+                end
+                
+                EXTRACT: begin
+                    y_times_x_sq <= (({24'd0, operand_q} * {24'd0, temp}) >> 24);
+                    state <= FINALIZE2;
+                end
+                
+                FINALIZE2: begin
+                    temp <= (({24'd0, x} * {24'd0, ((48'd3 << 24) - y_times_x_sq)}) >> 25);
+                    state <= FINAL_MULT;
+                end
+                
+                FINAL_MULT: begin
+                    x <= (({24'd0, operand_q} * {24'd0, temp}) >> 24);
+                    state <= FINAL_EXTRACT;
+                end
+                
+                FINAL_EXTRACT: begin
+                    state <= DONE_STATE;
+                end
+                
+                DONE_STATE: begin
+                    if (x[30]) begin
+                        result <= {1'b0, exp_result + 8'd6, x[29:7]};
+                    end else if (x[29]) begin
+                        result <= {1'b0, exp_result + 8'd5, x[28:6]};
+                    end else if (x[28]) begin
+                        result <= {1'b0, exp_result + 8'd4, x[27:5]};
+                    end else if (x[27]) begin
+                        result <= {1'b0, exp_result + 8'd3, x[26:4]};
+                    end else if (x[26]) begin
+                        result <= {1'b0, exp_result + 8'd2, x[25:3]};
+                    end else if (x[25]) begin
+                        result <= {1'b0, exp_result + 8'd1, x[24:2]};
+                    end else if (x[24]) begin
+                        result <= {1'b0, exp_result, x[23:1]};
+                    end else if (x[23]) begin
+                        result <= {1'b0, exp_result - 8'd1, x[22:0]};
+                    end else if (x[22]) begin
+                        result <= {1'b0, exp_result - 8'd2, x[21:0], 1'b0};
+                    end else if (x[21]) begin
+                        result <= {1'b0, exp_result - 8'd3, x[20:0], 2'b00};
+                    end else begin
+                        result <= {1'b0, exp_result - 8'd4, x[19:0], 3'b000};
                     end
-                end
-                
-                FINISH: begin
-                    result <= y;
+                    
                     done <= 1'b1;
                     busy <= 1'b0;
                     state <= IDLE;
@@ -248,50 +205,4 @@ module fsqrt_newton_raphson #(
             endcase
         end
     end
-
 endmodule
-module sqrt_lut (
-    input wire [31:0] operand,
-    output reg [31:0] initial_guess
-);
-
-    // Extract IEEE-754 fields
-    wire sign = operand[31];
-    wire [7:0] exponent = operand[30:23];
-    wire [22:0] mantissa = operand[22:0];
-    
-    // Handle exponent: sqrt(2^e) = 2^(e/2)
-    // For IEEE-754, biased exponent is exp - 127
-    // sqrt exponent = (exp - 127)/2 + 127 = (exp + 127)/2
-    
-    wire [7:0] new_exponent;
-    wire exp_is_odd = exponent[0];
-    
-    assign new_exponent = {1'b0, exponent[7:1]} + 8'd64;  // (exp >> 1) + 64 = (exp + 128)/2
-    
-    // Lookup table for mantissa
-    // Index: top 8 bits of mantissa
-    wire [7:0] lut_index = mantissa[22:15];
-    
-    // 256-entry LUT for sqrt of mantissa in range [1.0, 2.0)
-    reg [22:0] sqrt_mantissa [0:255];
-    
-    // Initialize LUT with pre-computed sqrt values
-    initial begin
-       $readmemh("sqrt_lut.hex", sqrt_mantissa);
-    end
-    
-    // Handle the case where exponent is odd
-    // If exp is odd, we compute sqrt(2*mantissa) instead
-    wire [22:0] effective_mantissa;
-    wire [7:0] effective_index;
-    
-    assign effective_index = exp_is_odd ? (lut_index | 8'h80) : lut_index;
-    
-    // Output the initial guess
-    always @(*) begin
-        initial_guess = {1'b0, new_exponent, sqrt_mantissa[effective_index]};
-    end
-
-endmodule
-
