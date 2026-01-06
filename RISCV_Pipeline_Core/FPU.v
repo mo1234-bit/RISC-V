@@ -123,7 +123,7 @@ module FPU (
     // ------------------------
     // Floating-point square root using Newton-Raphson
     // ------------------------
-    fsqrt_newton_raphson sqr(
+    fsqrt sqr(
         .clk(clk),
         .rst_n(rst_n),
         .start(A_ack_sqr && B_ack_sqr), // Start pulse (1 cycle)
@@ -134,4 +134,5 @@ module FPU (
     );
 
 endmodule
+
 
