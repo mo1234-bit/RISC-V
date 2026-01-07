@@ -4,7 +4,7 @@ module branch_predictor_2bit(
     input fetch_valid,
     output reg predict_taken,
     output reg [31:0] predict_target,
-    
+    input stall,
     input [31:0] exec_pc,
     input exec_is_branch,
     input exec_actual_taken,
@@ -32,14 +32,14 @@ module branch_predictor_2bit(
      wire was_predicted_taken;
      wire target_correct;
      
-   assign was_predicted_taken =
+   assign was_predicted_taken = !stall &&
     exec_is_branch &&
     btb_valid[exec_idx] &&
     (btb_tag[exec_idx] == exec_pc) &&
     btb_counter[exec_idx][1];
 
             
-           assign  target_correct = (exec_is_branch && (btb_target[exec_idx] === exec_actual_target))?1:0;
+           assign  target_correct = ( !stall && exec_is_branch && (btb_target[exec_idx] === exec_actual_target))?1:0;
 
           
     integer i;
@@ -48,7 +48,7 @@ module branch_predictor_2bit(
     // PREDICTION
     // ================================================================
    always @(*) begin
-    if (fetch_valid &&
+    if (fetch_valid && !stall &&
         btb_valid[fetch_idx] &&
         btb_tag[fetch_idx] == fetch_pc) begin
         predict_taken  = btb_counter[fetch_idx][1];
@@ -73,7 +73,7 @@ end
              correct_target <= 32'b0;
              mispredict<=0;
         end
-        else if (exec_is_branch) begin
+        else if (exec_is_branch && !stall ) begin
            
             correct_target <= exec_actual_taken ? exec_actual_target : (exec_pc + 4);
                 mispredict <=( (was_predicted_taken != exec_actual_taken) ||
@@ -103,103 +103,23 @@ end
 
 
 endmodule
-module tb_branch_predictor;
-
-    reg clk, rst_n;
-
-    reg [31:0] fetch_pc;
-    reg fetch_valid;
-
-    reg [31:0] exec_pc;
-    reg exec_is_branch;
-    reg exec_actual_taken;
-    reg [31:0] exec_actual_target;
-
-    wire predict_taken;
-    wire [31:0] predict_target;
-    wire mispredict;
-    wire [31:0] correct_target;
-
-    branch_predictor_2bit dut (
-        .clk(clk),
-        .rst_n(rst_n),
-        .fetch_pc(fetch_pc),
-        .fetch_valid(fetch_valid),
-        .predict_taken(predict_taken),
-        .predict_target(predict_target),
-        .exec_pc(exec_pc),
-        .exec_is_branch(exec_is_branch),
-        .exec_actual_taken(exec_actual_taken),
-        .exec_actual_target(exec_actual_target),
-        .mispredict(mispredict),
-        .correct_target(correct_target)
-    );
-
-    always #5 clk = ~clk;
-
-    initial begin
-        clk = 0;
-        rst_n = 0;
-        fetch_valid = 1;
-
-        fetch_pc = 0;
-        exec_pc = 0;
-        exec_is_branch = 0;
-        exec_actual_taken = 0;
-        exec_actual_target = 0;
-
-        #20 rst_n = 1;
-
-        // ===== First time branch (taken) =====
-        fetch_pc = 32'h100;
-        #10;
-
-        exec_pc = 32'h100;
-        exec_is_branch = 1;
-        exec_actual_taken = 1;
-        exec_actual_target = 32'h080;
-        #10;
-
-        // ===== Second time (taken again) =====
-        fetch_pc = 32'h100;
-        #10;
-
-        exec_actual_taken = 1;
-        #10;
-
-        // ===== Loop exit (not taken) =====
-        fetch_pc = 32'h100;
-        #10;
-
-        exec_actual_taken = 0;
-        #10;
-
-        $stop;
-    end
-
-endmodule
-
-
-// ================================================================
-// PERFORMANCE IMPACT EXAMPLE
-// ================================================================
+// How the 2-bit branch predictor works:
 //
-// Code with loop (10 iterations):
-//   loop:
-//       add x1, x1, x2
-//       add x3, x3, x4
-//       blt x1, x5, loop    # Taken 9 times, not taken once
+// On the first iteration of a branch:
+// - There is no valid BTB entry yet (btb_valid at exec index = 0), so the predictor assumes "not taken".
+// - When the branch reaches the execution stage (exec_is_branch = 1) and the actual branch is taken (exec_actual_taken = 1):
+//     - The BTB entry at the exec index is updated:
+//         - btb_valid is set to 1 (marks the entry as valid)
+//         - btb_tag is set to exec_pc (to associate this entry with this specific branch)
+//         - btb_target is set to exec_actual_target (the correct branch target address)
+//     - The 2-bit counter at the exec index is updated from "weakly not taken" to "weakly taken".
+//       This ensures that the next prediction will be taken, based on the MSB of the counter.
 //
-// WITHOUT PREDICTION:
-//   - Every branch flushes 2 instructions
-//   - 10 branches × 2 cycles = 20 wasted cycles
-//   - Total: 30 useful + 20 wasted = 50 cycles
-//   - IPC = 30/50 = 0.60
-//
-// WITH 2-BIT PREDICTION (~90% accuracy):
-//   - 9 correct predictions (no flush!)
-//   - 1 misprediction (2 cycle penalty)
-//   - Total: 30 useful + 2 wasted = 32 cycles
-//   - IPC = 30/32 = 0.94  (57% improvement!)
-//
-// This is why branch prediction is CRITICAL!
+// On subsequent iterations of the same branch:
+// - The predictor checks btb_valid at the exec index:
+//     - If it is 0 → first iteration → predict weakly not taken
+//     - If it is 1 → the counter at that index determines the predicted direction:
+//         - "weakly taken" or "strongly taken" → predict taken
+//         - Otherwise → predict not taken
+// - The BTB tag must match the fetch_pc to ensure that the prediction belongs to this specific branch
+//   and is not accidentally used for another branch.
