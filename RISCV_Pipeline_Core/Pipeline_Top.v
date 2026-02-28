@@ -32,7 +32,7 @@ module Pipeline_top1(
     wire [31:0] PCE, PCPlus4E, PCPlus4M, WriteDataM, ALU_ResultM;
     wire [31:0] PCPlus4W, ALU_ResultW, ReadDataW, FPU_ResultEW, InstrME;
     wire [4:0] RS1_E, RS2_E, DRDW, tag_data, mem_tag, DRDW_1, DRDW_2, DRDW_3;
-    wire [1:0] ForwardBE, ForwardAE;
+    wire [1:0] ForwardBE, ForwardAE,ForwardA_E_FPU,ForwardB_E_FPU;
 
     // ----------------------------
     // Floating point signals
@@ -53,7 +53,7 @@ module Pipeline_top1(
     
 
     //Branch prediction signals
-    wire exec_is_branch;
+    wire exec_is_branch,en_forword;
     wire exec_actual_taken;
     wire [31:0] exec_pc;
  wire mispredict;
@@ -140,7 +140,8 @@ module Pipeline_top1(
         .ResultSrcD(ResultSrcD),
         .pass(pass),
         .counter1(counter1),
-        .mispredict(mispredict)
+        .mispredict(mispredict),
+        .instr(instr)
     );
 
     // ----------------------------
@@ -203,7 +204,9 @@ module Pipeline_top1(
         .finish1(finish1),
         .exec_is_branch(exec_is_branch),
         .exec_actual_taken(exec_actual_taken),
-        .exec_pc(exec_pc)
+        .exec_pc(exec_pc),
+        .ForwardA_E_FPU(ForwardA_E_FPU),
+        .ForwardB_E_FPU(ForwardB_E_FPU)
     );
 
     // ----------------------------
@@ -288,13 +291,17 @@ module Pipeline_top1(
         .InstrDE(InstrDE),
         .pass(pass),
         .InstrD(InstrD),
+        .InstrDM(InstrDM),
+        .InstrDB(instr),
         .counter(counter),
         .counter_1(counter_1),
         .is_store(is_store),
         .counter1(counter1),
         .is_FOP(is_FOP),
         .finish1(finish1),
-        .is_store_1(is_store_1)
+        .is_store_1(is_store_1),
+        .ForwardA_E_FPU(ForwardA_E_FPU),
+        .ForwardB_E_FPU(ForwardB_E_FPU)
     );
 
 endmodule
