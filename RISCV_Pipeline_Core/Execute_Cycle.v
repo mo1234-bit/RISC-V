@@ -16,7 +16,7 @@ module execute_cycle(
     
     // Forwarding data from later stages
     input [31:0] ResultW, FPU_ResultW,
-    input [1:0] ForwardA_E, ForwardB_E,
+    input [1:0] ForwardA_E, ForwardB_E,ForwardA_E_FPU,ForwardB_E_FPU,
     
     // FPU control signals
     input faddE, fsubE, fmulE, fdivE, floadE, fstoreE, fsqrtE,
@@ -79,7 +79,7 @@ module execute_cycle(
         .a(RD1_E),
         .b(ResultW),
         .c(ALU_ResultM),
-        .s(ForwardA_E),
+        .s(ForwardA_E ),
         .d(Src_A_ALU)
     );
 
@@ -106,7 +106,7 @@ module execute_cycle(
         .a(FRD1_E),
         .b(FPU_ResultW),
         .c(FPU_ResultEM),
-        .s(ForwardA_E),
+        .s(ForwardA_E_FPU),
         .d(Src_A_FPU)
     );
 
@@ -114,7 +114,7 @@ module execute_cycle(
         .a(FRD2_E),
         .b(FPU_ResultW),
         .c(FPU_ResultEM),
-        .s(ForwardB_E),
+        .s(ForwardB_E_FPU),
         .d(Src_B_FPU_interim)
     );
 
@@ -170,7 +170,7 @@ module execute_cycle(
 
     // Stall signal for FPU instructions
     assign stall_f = ((fsubE && !finish_adder) || (faddE && !finish_adder) || 
-                      (fmulE && !finish_mul) || (fsqrtE && !finish_sqr)) ? 1'b1 : stall_f_buf;
+                      (fmulE && !finish_mul) || (fsqrtE && !finish_sqr) || (fdivE && !finish_div)) ? 1'b1 : stall_f_buf;
 
     // Finish signal for floating-point ops
     assign finish1 = (finish_mul || finish_adder || finish_div || finish_sqr) ? 1'b1 : 1'b0;
@@ -180,8 +180,7 @@ module execute_cycle(
     D #(1) flip1(.in(finish2), .out(finish), .clk(clk), .rst_n(rst_n));
 
     // Compute jump target (JAL/JALR)
-    assign JumpTarget = (OpE == 7'b1100111) ? (Src_A_ALU + Imm_Ext_E) : (PCE + Imm_Ext_E);
-
+  assign JumpTarget = (OpE == 7'b1100111) ? ((Src_A_ALU + Imm_Ext_E) & ~32'h1) : (PCE + Imm_Ext_E);
     // ----------------------------
     // Branch condition logic
     // ----------------------------
