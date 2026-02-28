@@ -25,14 +25,14 @@ module memory_cycle(
     // -----------------------------
     // Cache interface signals
     // -----------------------------
-    wire [24:0] i_p_addr;
+    wire [31:0] i_p_addr;
     wire [3:0] i_p_byte_en;
     wire [31:0] i_p_writedata;
     wire i_p_read;
      wire o_p_readdata_valid;
     wire i_p_write;
     wire [31:0] o_p_readdata;
-    wire [25:0] o_m_addr;
+    wire [32:0] o_m_addr;
     wire [31:0] o_m_writedata;
     wire o_m_read, o_m_write;
     wire [31:0] i_m_readdata;
@@ -42,7 +42,7 @@ module memory_cycle(
     // -----------------------------
     // Cache memory control
     // -----------------------------
-    assign i_p_addr = ALU_ResultM[24:0];  // Memory address from ALU
+    assign i_p_addr = ALU_ResultM;  // Memory address from ALU
     assign i_p_byte_en = 4'b1111;         // Full word access
     assign i_p_writedata = WriteDataM;    // Data to write to memory
     assign i_p_read = (ResultSrcM || FResultSrcM) && !MemWriteM; // Read if load/floating load
@@ -87,7 +87,7 @@ module memory_cycle(
         .i_m_readdata_valid(i_m_readdata_valid),
         .i_m_waitrequest(i_m_waitrequest),
         .ren(o_m_read),
-        .A({6'b000000, o_m_addr}),  // Extend address to 32-bit
+        .A(o_m_addr[32:1]),  // Extend address to 32-bit
         .RD(i_m_readdata)
     );
 
@@ -161,7 +161,7 @@ module memory_cycle(
             if (i_p_read)  counter_1 <= counter_1 + 1;
 
             if (counter == 5'd4) counter <= 0;      // reset after 4 writes
-            if (counter_1 == 5'd3) counter_1 <= 0;  // reset after 3 reads
+            if (counter_1 == 5'd3 ) counter_1 <= 0;  // reset after 3 reads
         end
     end
 
