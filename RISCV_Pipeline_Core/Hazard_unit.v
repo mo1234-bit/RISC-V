@@ -30,14 +30,14 @@ module hazard_unit(
     input is_store_1,      // Store instruction in later stage
 
     // Instructions (used for opcode-based hazard checks)
-    input [31:0] InstrDE, InstrD,
+    input [31:0] InstrDE, InstrD,InstrDB,InstrDM,
 
     // Forwarding controls
-    output [1:0] ForwardAE, ForwardBE,
+    output [1:0] ForwardAE, ForwardBE,ForwardA_E_FPU,ForwardB_E_FPU,
 
     // Pipeline stall / flush controls
     output StallF, StallD,
-    output FlushE, FlushD,
+    output FlushE, FlushD,en_forword_1,
 
     // Indicates when pipeline is allowed to advance
     output pass,
@@ -48,10 +48,12 @@ module hazard_unit(
 
     // Load-use hazard signals
     wire lwStall, lwstall2;
-
+    wire [4:0]Rs1_D_1;
     // Delayed versions of hazard signal (used for store forwarding)
     wire s_1, s_2, s_3, s_4, s_5;
-
+    wire load_after_store_forwarding1,load_after_store_forwarding2,load_after_store_forwarding3,load_after_store_forwarding4,load_after_store_forwarding5;
+ wire load_after_store_forwarding=(InstrDM[6:0]==7'b0000111 && InstrDM[14:12]==3'b010 && InstrDB[6:0]==7'b0100111 && InstrDB[14:12]==3'b010)?1:0;
+    wire en_forword=((DRD_W == Rs1_D || DRD_W == Rs2_D)&& load_after_store_forwarding5 )?1:0;
     // ---------------------------------------------------------
     // Forwarding logic for ALU input A (Rs1)
     // ---------------------------------------------------------
@@ -63,10 +65,10 @@ module hazard_unit(
          (RD_M == Rs1_E) &&
          !ResultSrcM) ? 2'b10 :
         // Forward from WB stage
-        ((RegWriteW || FRegWriteW) &&
+        (((RegWriteW || FRegWriteW) &&
          (RD_W != 5'h00) &&
          (RD_W == Rs1_E) &&
-         !ResultSrcM) ? 2'b01 :
+         !ResultSrcM)) ? 2'b01 :
         2'b00;
 
     // ---------------------------------------------------------
@@ -87,14 +89,50 @@ module hazard_unit(
           (s_5 && is_store_1)) ? 2'b01 :
         2'b00;
 
+ // ---------------------------------------------------------
+    // Forwarding logic for FPU input A (Rs2)
+    // ---------------------------------------------------------
+        assign ForwardA_E_FPU =
+        (rst_n == 1'b0) ? 2'b00 :
+        // Forward from MEM stage
+        ((RegWriteM || FRegWriteM) &&
+         (RD_M != 5'h00) &&
+         (RD_M == Rs1_E) &&
+         !ResultSrcM) ? 2'b10 :
+        // Forward from WB stage
+        (((RegWriteW || FRegWriteW) &&
+         (RD_W != 5'h00) &&
+         (RD_W == Rs1_E) &&
+         !ResultSrcM)|| en_forword_1) ? 2'b01 :
+        2'b00;
+
+    // ---------------------------------------------------------
+    // Forwarding logic for FPU input B (Rs2)
+    // ---------------------------------------------------------
+    assign ForwardB_E_FPU =
+        (rst_n == 1'b0) ? 2'b00 :
+        // Forward from MEM stage
+        (((RegWriteM || FRegWriteM) &&
+         (RD_M != 5'h00) &&
+         (RD_M == Rs2_E) &&
+         !ResultSrcM)) ? 2'b10 :
+        // Forward from WB stage OR delayed store forwarding
+        (((RegWriteW || FRegWriteW) &&
+          (RD_W != 5'h00) &&
+          (RD_W == Rs2_E) &&
+          !ResultSrcM) ||
+          (s_5 && is_store_1)) ? 2'b01 :
+        2'b00;
+
+
     // ---------------------------------------------------------
     // Detect store depending on a previous load (opcode-based)
     // Used to handle memory hazards correctly
     // ---------------------------------------------------------
     wire s = ((ResultSrcE == 1'b1) &&
              (
-              (InstrD[7:0]  == 7'b0100011 && InstrDE[7:0] == 7'b0000011) || // SW after LW
-              (InstrDE[7:0] == 7'b0000111 && InstrD[7:0]  == 7'b0100111)     // FSW after FLW
+              (InstrD[6:0]  == 7'b0100011 && InstrDE[6:0] == 7'b0000011) || // SW after LW
+              (InstrDE[6:0] == 7'b0000111 && InstrD[6:0]  == 7'b0100111)     // FSW after FLW
              ) &&
              ((RD_E == Rs1_D) || (RD_E == Rs2_D)) &&
              (RD_E != 5'h00));
@@ -103,12 +141,13 @@ module hazard_unit(
     // Load-use hazard detection
     // Stall if EX-stage load is needed by Decode-stage instruction
     // ---------------------------------------------------------
+   
     assign lwStall =
         (ResultSrcE == 1'b1) &&
         ((RD_E == Rs1_D) || (RD_E == Rs2_D)) &&
         (RD_E != 5'h00) &&
         (DRD_W != Rs1_D && DRD_W != Rs2_D);
-
+   wire q= (RD_W==Rs1_D_1);
     // ---------------------------------------------------------
     // Stall due to memory latency or store waiting for data
     // ---------------------------------------------------------
@@ -119,7 +158,7 @@ module hazard_unit(
     // ---------------------------------------------------------
     // Pipeline flush and stall control
     // ---------------------------------------------------------
-    assign FlushD = PCSrcE;              // Flush Decode on branch/jump
+    assign FlushD = PCSrcE && (InstrDE[6:0]!=7'b1100011);              // Flush Decode on branch/jump
     assign pass   = ((lwStall && !lwstall2) ||
                      (is_FOP && finish1)) ? 1'b1 : 1'b0;
 
@@ -166,4 +205,12 @@ module hazard_unit(
     D #(1) flip3 (.in(s_3), .out(s_4), .clk(clk), .rst_n(rst_n));
     D #(1) flip4 (.in(s_4), .out(s_5), .clk(clk), .rst_n(rst_n));
 
+
+    D #(1) flip5  (.in(load_after_store_forwarding),   .out(load_after_store_forwarding1), .clk(clk), .rst_n(rst_n));
+    D #(1) flip6 (.in(load_after_store_forwarding1), .out(load_after_store_forwarding2), .clk(clk), .rst_n(rst_n));
+    D #(1) flip7 (.in(load_after_store_forwarding2), .out(load_after_store_forwarding3), .clk(clk), .rst_n(rst_n));
+    D #(1) flip8 (.in(load_after_store_forwarding3), .out(load_after_store_forwarding4), .clk(clk), .rst_n(rst_n));
+    D #(1) flip9 (.in(load_after_store_forwarding4), .out(load_after_store_forwarding5), .clk(clk), .rst_n(rst_n));
+     D #(1) flip10 (.in(en_forword), .out(en_forword_1), .clk(clk), .rst_n(rst_n));
+          D #(5) flip11 (.in(Rs1_D), .out(Rs1_D_1), .clk(clk), .rst_n(rst_n));
 endmodule
