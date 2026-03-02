@@ -1,6 +1,6 @@
 module fsqrt(
     input wire clk,
-    input wire reset,
+    input wire rst_n,
     input wire start,
     input wire [31:0] operand,
     output reg [31:0] result,
@@ -42,7 +42,7 @@ module fsqrt(
     end
     
     always @(posedge clk) begin
-        if (!reset) begin
+        if (!rst_n) begin
             state <= IDLE;
             done <= 1'b0;
             busy <= 1'b0;
@@ -85,9 +85,10 @@ module fsqrt(
                         done <= 1'b1;
                         busy <= 1'b0;
                         state <= IDLE;
-                    end else begin
+                    end else if(start) begin
                         state <= INIT;
-                    end
+                    end else 
+                    state<=IDLE;
                 end
                 
                 INIT: begin
@@ -206,4 +207,3 @@ module fsqrt(
         end
     end
 endmodule
-
