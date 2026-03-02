@@ -32,7 +32,7 @@ module memory_cycle(
      wire o_p_readdata_valid;
     wire i_p_write;
     wire [31:0] o_p_readdata;
-    wire [32:0] o_m_addr;
+    wire [31:0] o_m_addr;
     wire [31:0] o_m_writedata;
     wire o_m_read, o_m_write;
     wire [31:0] i_m_readdata;
@@ -87,7 +87,7 @@ module memory_cycle(
         .i_m_readdata_valid(i_m_readdata_valid),
         .i_m_waitrequest(i_m_waitrequest),
         .ren(o_m_read),
-        .A(o_m_addr[32:1]),  // Extend address to 32-bit
+        .A(o_m_addr),  // Extend address to 32-bit
         .RD(i_m_readdata)
     );
 
