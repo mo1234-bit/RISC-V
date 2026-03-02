@@ -31,15 +31,9 @@ module fsqrt(
     wire exp_odd = exp_unbiased[0];
     wire [8:0] index = mant_in[22:14];
     
-    integer i;
-    real lut_input, rsqrt_val;
-    initial begin
-        for (i = 0; i < 512; i = i + 1) begin
-            lut_input = 1.0 + (i / 512.0);
-            rsqrt_val = 1.0 / $sqrt(lut_input);
-            rsqrt_lut[i] = $rtoi(rsqrt_val * (2.0 ** 23));
-        end
-    end
+  initial begin
+    $readmemh("rsqrt_lut_512x24.hex", rsqrt_lut);
+end
     
     always @(posedge clk) begin
         if (!rst_n) begin
@@ -103,7 +97,6 @@ module fsqrt(
                     // LUT is Q1.23 (bit 23 = 1.0), convert to Q24.24 (bit 24 = 1.0)
                     // Shift left by 1: {rsqrt_lut[index], 24'd0} gives bit 47, we want bit 24
                     // So we need to shift right by 23 to move bit 47 to bit 24
-                    // Actually: {lut, 24'd0} puts lut[23] at bit 47, shift right 23 puts it at bit 24
                     x <= {24'd0, rsqrt_lut[index]} << 1;
                     
                     if (exp_odd) begin
@@ -207,3 +200,5 @@ module fsqrt(
         end
     end
 endmodule
+
+
