@@ -37,7 +37,7 @@ module hazard_unit(
 
     // Pipeline stall / flush controls
     output StallF, StallD,
-    output FlushE, FlushD,en_forword_1,
+    output FlushE, FlushD,en_forward_1,
 
     // Indicates when pipeline is allowed to advance
     output pass,
@@ -48,12 +48,13 @@ module hazard_unit(
 
     // Load-use hazard signals
     wire lwStall, lwstall2;
-    wire [4:0]Rs1_D_1;
+    wire [4:0]Rs1_E_1,RD_M_1;
     // Delayed versions of hazard signal (used for store forwarding)
     wire s_1, s_2, s_3, s_4, s_5;
+    //when a load comes after store then an flouting point operation is executing we need to forward the result of loading
     wire load_after_store_forwarding1,load_after_store_forwarding2,load_after_store_forwarding3,load_after_store_forwarding4,load_after_store_forwarding5;
  wire load_after_store_forwarding=(InstrDM[6:0]==7'b0000111 && InstrDM[14:12]==3'b010 && InstrDB[6:0]==7'b0100111 && InstrDB[14:12]==3'b010)?1:0;
-    wire en_forword=((DRD_W == Rs1_D || DRD_W == Rs2_D)&& load_after_store_forwarding5 )?1:0;
+    wire en_forward=((DRD_W == Rs1_D || DRD_W == Rs2_D)&& load_after_store_forwarding5 )?1:0;
     // ---------------------------------------------------------
     // Forwarding logic for ALU input A (Rs1)
     // ---------------------------------------------------------
@@ -103,7 +104,7 @@ module hazard_unit(
         (((RegWriteW || FRegWriteW) &&
          (RD_W != 5'h00) &&
          (RD_W == Rs1_E) &&
-         !ResultSrcM)|| en_forword_1) ? 2'b01 :
+         !ResultSrcM)|| en_forward_1) ? 2'b01 :
         2'b00;
 
     // ---------------------------------------------------------
@@ -146,10 +147,12 @@ module hazard_unit(
         (ResultSrcE == 1'b1) &&
         ((RD_E == Rs1_D) || (RD_E == Rs2_D)) &&
         (RD_E != 5'h00) &&
-        (DRD_W != Rs1_D && DRD_W != Rs2_D);
-   wire q= (RD_W==Rs1_D_1);
+       ( (DRD_W != Rs1_D && DRD_W != Rs2_D));
+   
     // ---------------------------------------------------------
-    // Stall due to memory latency or store waiting for data
+    // Stall due to memory latency or store waiting for data 
+    // counter_1 for number of cycles a read from cache need
+    // counter for number of cycles a write in cache need
     // ---------------------------------------------------------
     assign lwstall2 =
         ((counter_1 != 5'd2 && ResultSrcM == 1'b1) ||
@@ -159,7 +162,7 @@ module hazard_unit(
     // Pipeline flush and stall control
     // ---------------------------------------------------------
     assign FlushD = PCSrcE && (InstrDE[6:0]!=7'b1100011);              // Flush Decode on branch/jump
-    assign pass   = ((lwStall && !lwstall2) ||
+    assign pass   = ((lwStall && !lwstall2 ) ||
                      (is_FOP && finish1)) ? 1'b1 : 1'b0;
 
     assign StallF = lwStall || lwstall2; // Stall Fetch
@@ -169,6 +172,8 @@ module hazard_unit(
     // ---------------------------------------------------------
     // Counter logic
     // Ensures writeback occurs only when cache/memory data is stable
+    // 17 is number of cycles which after it the system is stable to do operations
+    // and after two of that is the time need for finishing the operation(19)
     // ---------------------------------------------------------
     reg en;
 
@@ -211,6 +216,7 @@ module hazard_unit(
     D #(1) flip7 (.in(load_after_store_forwarding2), .out(load_after_store_forwarding3), .clk(clk), .rst_n(rst_n));
     D #(1) flip8 (.in(load_after_store_forwarding3), .out(load_after_store_forwarding4), .clk(clk), .rst_n(rst_n));
     D #(1) flip9 (.in(load_after_store_forwarding4), .out(load_after_store_forwarding5), .clk(clk), .rst_n(rst_n));
-     D #(1) flip10 (.in(en_forword), .out(en_forword_1), .clk(clk), .rst_n(rst_n));
-          D #(5) flip11 (.in(Rs1_D), .out(Rs1_D_1), .clk(clk), .rst_n(rst_n));
+    D #(1) flip10 (.in(en_forward), .out(en_forward_1), .clk(clk), .rst_n(rst_n));
+    D #(5) flip11 (.in(Rs1_E), .out(Rs1_E_1), .clk(clk), .rst_n(rst_n));
+    D #(5) flip12 (.in(RD_M), .out(RD_M_1), .clk(clk), .rst_n(rst_n));
 endmodule
