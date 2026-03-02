@@ -70,7 +70,7 @@ module decode_cycle(
         .FResultSrc(FResultSrc)
     );
     
-    wire en_f = (fResultW===32'hxxxxxxxx)?1'b0:(!FResultSrcW && finish) ? 1'b1 :
+    wire en_f = (!FResultSrcW && finish) ? 1'b1 :
                 (FResultSrcW) ? FRegWriteW : 1'b0;
     
     freg_file frf(
@@ -84,7 +84,7 @@ module decode_cycle(
         .F_RD2(FRD2_D)
     );
     
-    wire en = (counter1 > 5'd9 || (ResultW===32'hxxxxxxxx)) ? 0 : RegWriteW;
+    wire en = (counter1 > 5'd9) ? 0 : RegWriteW;
     
     Register_File rf (
         .clk(clk), .rst_n(rst_n),
