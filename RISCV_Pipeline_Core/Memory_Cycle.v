@@ -2,30 +2,33 @@
 // Handles memory read/write, floating-point writeback, pipeline registers, and cache interface
 module memory_cycle(
     input clk, rst_n,                     // Clock and synchronous reset
-    input RegWriteM, FRegWriteM, MemWriteM, pass, stall,
-    input ResultSrcM, FResultSrcM,        // Control signals
+    input RegWriteM, FRegWriteM, MemWriteM, pass, stall,pass_load,
+    input ResultSrcM, FResultSrcM, JumpM ,      // Control signals
     input [4:0] RD_M,                     // Destination register
     input [31:0] PCPlus4M, WriteDataM, ALU_ResultM, FPU_ResultEM, InstrDM,  // Data from EX stage
     output RegWriteW, ResultSrcW, 
     output [4:0] RD_W, DRDW,
     output [31:0] PCPlus4W, ALU_ResultW, ReadDataW, FPU_ResultEW, fReadDataW,
-    output FRegWriteMW, FResultSrcW,
+    output FRegWriteMW, FResultSrcW,JumpW,
     output reg [31:0] instr,             // Instruction for debugging / pipeline trace
-    output reg [4:0] counter, counter_1  // Counters for stall/wait management
+    output reg [4:0] counter, counter_1,  // Counters for stall/wait management
+    output w 
 );
 
     // -----------------------------
     // Pipeline registers (MEM -> WB)
     // -----------------------------
     wire [31:0] ReadDataM;
-    reg RegWriteM_r, FRegWriteM_r, ResultSrcM_r, FResultSrcM_r;
+    reg RegWriteM_r, FRegWriteM_r, ResultSrcM_r, FResultSrcM_r,JumpW_r;
     reg [4:0] RD_M_r, mem_tag_M_r;
-    reg [31:0] PCPlus4M_r, ALU_ResultM_r, ReadDataM_r, FPU_ResultEM_r, fReadDataM_r;
+    reg [31:0] PCPlus4M_r, ALU_ResultM_r, ReadDataM_r, FPU_ResultEM_r, fReadDataM_r,fReadDataW_reg,ReadDataW_reg;
    
     // -----------------------------
     // Cache interface signals
     // -----------------------------
     wire [31:0] i_p_addr;
+    reg [31:0]i_p_addr_reg;
+    reg en,i_p_write_reg;
     wire [3:0] i_p_byte_en;
     wire [31:0] i_p_writedata;
     wire i_p_read;
@@ -38,7 +41,8 @@ module memory_cycle(
     wire [31:0] i_m_readdata;
     wire i_m_readdata_valid;
     wire i_m_waitrequest, o_p_waitrequest1;
-
+wire s=(InstrDM==instr && i_p_read)&&(i_p_addr!=i_p_addr_reg) ;
+wire  [2:0]    state;
     // -----------------------------
     // Cache memory control
     // -----------------------------
@@ -47,9 +51,9 @@ module memory_cycle(
     assign i_p_writedata = WriteDataM;    // Data to write to memory
     assign i_p_read = (ResultSrcM || FResultSrcM) && !MemWriteM; // Read if load/floating load
     assign i_p_write = MemWriteM;         // Write if store
-    assign ReadDataM = o_p_readdata;      // Read data from cache
-    wire [31:0] fReadDataM = o_p_readdata; // Floating-point memory read
-
+    assign ReadDataM = (en &&  i_p_read)?ReadDataW_reg: (i_p_read)?o_p_readdata:ReadDataW_reg;      // Read data from cache
+    wire [31:0] fReadDataM = (en && i_p_read)?fReadDataW_reg:(i_p_read)?o_p_readdata:fReadDataW_reg; // Floating-point memory read
+    assign w=(i_p_write_reg&&i_p_read&&(i_p_addr!=i_p_addr_reg)&& state!=3'd0);
     wire stall_C;  // Cache stall signal
 
     // -----------------------------
@@ -73,7 +77,9 @@ module memory_cycle(
         .o_m_write(o_m_write),
         .i_m_readdata(i_m_readdata),
         .i_m_readdata_valid(i_m_readdata_valid),
-        .i_m_waitrequest(i_m_waitrequest)
+        .i_m_waitrequest(i_m_waitrequest),
+        .state(state),
+        .m(w)
     );
 
     // -----------------------------
@@ -108,8 +114,9 @@ module memory_cycle(
             FResultSrcM_r <= 1'b0; 
             fReadDataM_r <= 0;
             instr <= 0;
+            JumpW_r<=0;
         end
-        else if ((!stall) || pass) begin
+        else if ((!stall) || pass ||pass_load) begin
             // Latch values when not stalled
             instr <= InstrDM;
             FResultSrcM_r <= FResultSrcM;
@@ -122,6 +129,7 @@ module memory_cycle(
             FRegWriteM_r <= FRegWriteM;
             FPU_ResultEM_r <= FPU_ResultEM;
             fReadDataM_r <= fReadDataM;
+            JumpW_r<=JumpM;
         end
     end 
 
@@ -138,6 +146,8 @@ module memory_cycle(
     assign ReadDataW = ReadDataM_r;
     assign FRegWriteMW = FRegWriteM_r;
     assign FPU_ResultEW = FPU_ResultEM_r;
+    assign JumpW=JumpW_r;
+
 
     // -----------------------------
     // Pipeline register delay for DRDW (WB destination register)
@@ -155,6 +165,11 @@ module memory_cycle(
         if (!rst_n) begin
             counter <= 0;
             counter_1 <= 0;
+            i_p_addr_reg<=32'd0;
+            en<=0;
+            fReadDataW_reg<=0;
+            ReadDataW_reg<=0;
+            i_p_write_reg<=0;
         end
         else begin
             if (i_p_write) counter <= counter + 1;
@@ -162,7 +177,18 @@ module memory_cycle(
 
             if (counter == 5'd4) counter <= 0;      // reset after 4 writes
             if (counter_1 == 5'd3 ) counter_1 <= 0;  // reset after 3 reads
+            i_p_addr_reg<=i_p_addr;
+            if (s)
+            en<=1;
+            if(!i_p_read)
+            en<=0;
+            if(!en &&i_p_read)begin
+            fReadDataW_reg<=o_p_readdata;
+            ReadDataW_reg<=o_p_readdata;
+            end
+           i_p_write_reg<=i_p_write;
         end
     end
+
 
 endmodule
