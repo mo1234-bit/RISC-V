@@ -7,21 +7,21 @@ module Pipeline_top1(
     // ----------------------------
     // Control signals between stages
     // ----------------------------
-    wire PCSrcE;           // Branch or Jump control from execute stage
+    wire PCSrcE;
     wire RegWriteW, RegWriteE;
     wire ALUSrcE, MemWriteE, ResultSrcE;
-    wire BranchE, JumpE,JumpM,JumpW;
-    wire ResultSrcR, pass_2,regfile_en;
+    wire BranchE, JumpE, JumpM, JumpW;
+    wire ResultSrcR, pass_2, regfile_en;
     wire RegWriteM, MemWriteM, ResultSrcM, ResultSrcW;
-    wire finish, pass, write_ready, read_ready, stall_WB, finish1,n,pass_load,w;
+    wire finish, pass, write_ready, read_ready, stall_WB, finish1, n, pass_load, w;
     wire [3:0] ALUControlE;
     wire [2:0] funct3E;
     wire [6:0] OpE;
-    
+
     // ----------------------------
     // Register IDs and counters
     // ----------------------------
-    wire [4:0] RD_E, RD_M, RDW, Rs1_D, Rs2_D,Rs1_M,Rs2_M;
+    wire [4:0] RD_E, RD_M, RDW, Rs1_D, Rs2_D, Rs1_M, Rs2_M;
     wire [4:0] counter, counter_1, counter1;
 
     // ----------------------------
@@ -31,8 +31,8 @@ module Pipeline_top1(
     wire [31:0] InstrDM, InstrDE, instr;
     wire [31:0] PCE, PCPlus4E, PCPlus4M, WriteDataM, ALU_ResultM;
     wire [31:0] PCPlus4W, ALU_ResultW, ReadDataW, FPU_ResultEW, InstrME;
-    wire [4:0] RS1_E, RS2_E, DRDW, tag_data, mem_tag, DRDW_1, DRDW_2, DRDW_3;
-    wire [1:0] ForwardBE, ForwardAE,ForwardA_E_FPU,ForwardB_E_FPU;
+    wire [4:0]  RS1_E, RS2_E, DRDW, tag_data, mem_tag, DRDW_1, DRDW_2, DRDW_3;
+    wire [1:0]  ForwardBE, ForwardAE, ForwardA_E_FPU, ForwardB_E_FPU;
 
     // ----------------------------
     // Floating point signals
@@ -41,41 +41,35 @@ module Pipeline_top1(
     wire [31:0] FPU_ResultEM, FRD1_E, FRD2_E, FResultW;
     wire FRegWrite_M, FRegWriteMW, floadM, fstoreM;
     wire FResultSrcE, FResultSrcM, FResultSrcW;
-    
-    // Flags for store instructions
-    wire is_store  = (InstrDM[6:0]==7'b0100011 || InstrDM[6:0]==7'b0100111)?1:0;
-    wire is_store_1= (InstrDE[6:0]==7'b0100011 || InstrDE[6:0]==7'b0100111)?1:0;
+
+    // Store instruction flags
+    wire is_store   = (InstrDM[6:0]==7'b0100011 || InstrDM[6:0]==7'b0100111) ? 1 : 0;
+    wire is_store_1 = (InstrDE[6:0]==7'b0100011 || InstrDE[6:0]==7'b0100111) ? 1 : 0;
 
     // Pipeline control signals
     wire o_p_waitrequest, stall, is_FOP;
     wire StallF, StallD, FlushE, FlushD, o_p_readdata_valid;
     wire [31:0] fReadDataW;
-    
 
-    //Branch prediction signals
-    wire exec_is_branch,en_forword;
+    // Branch prediction signals
+    wire exec_is_branch, en_forword;
     wire exec_actual_taken;
     wire [31:0] exec_pc;
- wire mispredict;
+    wire mispredict;
+    wire [2:0] funct3M;
 
-    // Assign the top-level output
     assign Result = ResultW[15:0];
 
-    // Stall in execute stage if decode stage is stalled
     wire stallE = (StallD) ? 1 : 0;
 
     // ----------------------------
     // Fetch stage instance
     // ----------------------------
     fetch_cycle Fetch (
-        .clk(clk), 
-        .rst_n(rst_n), 
-        .PCSrcE(PCSrcE), 
-        .JumpE(JumpE),
-        .PCTargetE(PCTargetE), 
-        .InstrD(InstrD), 
-        .PCD(PCD), 
-        .PCPlus4D(PCPlus4D),
+        .clk(clk), .rst_n(rst_n),
+        .PCSrcE(PCSrcE), .JumpE(JumpE),
+        .PCTargetE(PCTargetE),
+        .InstrD(InstrD), .PCD(PCD), .PCPlus4D(PCPlus4D),
         .stall(StallF),
         .stall_f(stall),
         .pass(pass),
@@ -90,50 +84,27 @@ module Pipeline_top1(
     // Decode stage instance
     // ----------------------------
     decode_cycle Decode (
-        .clk(clk), 
-        .rst_n(rst_n), 
+        .clk(clk), .rst_n(rst_n),
         .InstrDe(InstrD),
         .FResultSrcW(FResultSrcW),
-        .PCD(PCD), 
-        .PCPlus4D(PCPlus4D), 
-        .RegWriteW(RegWriteW), 
-        .RDW(RDW), 
-        .ResultW(ResultW), 
-        .RegWriteE(RegWriteE), 
-        .ALUSrcE(ALUSrcE), 
-        .MemWriteE(MemWriteE), 
-        .ResultSrcE(ResultSrcE),
-        .BranchE(BranchE),
-        .JumpE(JumpE),
-        .ALUControlE(ALUControlE), 
-        .funct3E(funct3E),
-        .OpE(OpE), 
-        .RD1_E(RD1_E), 
-        .RD2_E(RD2_E), 
-        .Imm_Ext_E(Imm_Ext_E), 
-        .RD_E(RD_E), 
-        .PCE(PCE), 
-        .PCPlus4E(PCPlus4E),
-        .RS1_E(RS1_E),
-        .RS2_E(RS2_E),
+        .PCD(PCD), .PCPlus4D(PCPlus4D),
+        .RegWriteW(RegWriteW), .RDW(RDW), .ResultW(ResultW),
+        .RegWriteE(RegWriteE), .ALUSrcE(ALUSrcE),
+        .MemWriteE(MemWriteE), .ResultSrcE(ResultSrcE),
+        .BranchE(BranchE), .JumpE(JumpE),
+        .ALUControlE(ALUControlE), .funct3E(funct3E), .OpE(OpE),
+        .RD1_E(RD1_E), .RD2_E(RD2_E), .Imm_Ext_E(Imm_Ext_E),
+        .RD_E(RD_E), .PCE(PCE), .PCPlus4E(PCPlus4E),
+        .RS1_E(RS1_E), .RS2_E(RS2_E),
         .stall(StallD),
-        .faddE(faddE),
-        .fsubE(fsubE),
-        .fmulE(fmulE),
-        .fdivE(fdivE),
-        .floadE(floadE),
-        .fstoreE(fstoreE),
-        .fsqrtE(fsqrtE),
-        .FRD1_E(FRD1_E),
-        .FRD2_E(FRD2_E),
+        .faddE(faddE), .fsubE(fsubE), .fmulE(fmulE), .fdivE(fdivE),
+        .floadE(floadE), .fstoreE(fstoreE), .fsqrtE(fsqrtE),
+        .FRD1_E(FRD1_E), .FRD2_E(FRD2_E),
         .FRegWrite_E(FRegWrite_E),
         .FRegWriteW(FRegWriteMW),
-        .is_FOP(is_FOP),
-        .FResultSrcE(FResultSrcE),
-        .FlushD(FlushD),
-        .InstrDE(InstrDE),
-        .Rs1_D(Rs1_D),
-        .Rs2_D(Rs2_D),
+        .is_FOP(is_FOP), .FResultSrcE(FResultSrcE),
+        .FlushD(FlushD), .InstrDE(InstrDE),
+        .Rs1_D(Rs1_D), .Rs2_D(Rs2_D),
         .fResultW(FResultW),
         .stall_f(stall),
         .finish(finish),
@@ -150,120 +121,77 @@ module Pipeline_top1(
     // Execute stage instance
     // ----------------------------
     execute_cycle Execute (
-        .clk(clk), 
-        .rst_n(rst_n), 
-        .RegWriteE(RegWriteE), 
-        .ALUSrcE(ALUSrcE), 
-        .MemWriteE(MemWriteE), 
-        .ResultSrcE(ResultSrcE), 
-        .BranchE(BranchE),
-        .JumpE(JumpE),
-        .ALUControlE(ALUControlE), 
-        .funct3E(funct3E),
-        .OpE(OpE),  
-        .RD1_E(RD1_E), 
-        .RD2_E(RD2_E), 
-        .Imm_Ext_E(Imm_Ext_E), 
-        .RD_E(RD_E), 
-        .PCE(PCE), 
-        .PCPlus4E(PCPlus4E), 
-        .PCSrcE(PCSrcE), 
-        .PCTargetE(PCTargetE), 
-        .RegWriteM(RegWriteM), 
-        .MemWriteM(MemWriteM), 
-        .ResultSrcM(ResultSrcM), 
-        .RD_M(RD_M), 
-        .PCPlus4M(PCPlus4M), 
-        .WriteDataM(WriteDataM), 
-        .ALU_ResultM(ALU_ResultM),
+        .clk(clk), .rst_n(rst_n),
+        .RegWriteE(RegWriteE), .ALUSrcE(ALUSrcE),
+        .MemWriteE(MemWriteE), .ResultSrcE(ResultSrcE),
+        .BranchE(BranchE), .JumpE(JumpE),
+        .ALUControlE(ALUControlE), .funct3E(funct3E), .OpE(OpE),
+        .RD1_E(RD1_E), .RD2_E(RD2_E), .Imm_Ext_E(Imm_Ext_E),
+        .RD_E(RD_E), .PCE(PCE), .PCPlus4E(PCPlus4E),
+        .PCSrcE(PCSrcE), .PCTargetE(PCTargetE),
+        .RegWriteM(RegWriteM), .MemWriteM(MemWriteM),
+        .ResultSrcM(ResultSrcM), .RD_M(RD_M),
+        .PCPlus4M(PCPlus4M), .WriteDataM(WriteDataM), .ALU_ResultM(ALU_ResultM),
         .ResultW(ResultW),
-        .ForwardA_E(ForwardAE),
-        .ForwardB_E(ForwardBE),
-        .faddE(faddE),
-        .fsubE(fsubE),
-        .fmulE(fmulE),
-        .fdivE(fdivE),
+        .ForwardA_E(ForwardAE), .ForwardB_E(ForwardBE),
+        .faddE(faddE), .fsubE(fsubE), .fmulE(fmulE), .fdivE(fdivE),
         .FResultSrcE(FResultSrcE),
-        .floadE(floadE),
-        .fstoreE(fstoreE),
-        .fsqrtE(fsqrtE),
+        .floadE(floadE), .fstoreE(fstoreE), .fsqrtE(fsqrtE),
         .FRegWrite_E(FRegWrite_E),
         .FRegWrite_M(FRegWrite_M),
         .FPU_ResultEM(FPU_ResultEM),
-        .floadM(floadM),
-        .fstoreM(fstoreM),
+        .floadM(floadM), .fstoreM(fstoreM),
         .stall_f(stall),
         .FPU_ResultW(FResultW),
         .is_FOP(is_FOP),
-        .FRD1_E(FRD1_E),
-        .FRD2_E(FRD2_E),
+        .FRD1_E(FRD1_E), .FRD2_E(FRD2_E),
         .FResultSrcM(FResultSrcM),
-        .InstrDE(InstrDE),
-        .InstrDM(InstrDM),
-        .finish(finish),
-        .stallE(stallE),
-        .pass(pass),
-        .finish1(finish1),
+        .InstrDE(InstrDE), .InstrDM(InstrDM),
+        .finish(finish), .stallE(stallE),
+        .pass(pass), .finish1(finish1),
         .exec_is_branch(exec_is_branch),
         .exec_actual_taken(exec_actual_taken),
         .exec_pc(exec_pc),
         .ForwardA_E_FPU(ForwardA_E_FPU),
         .ForwardB_E_FPU(ForwardB_E_FPU),
-        .JumpM(JumpM),
-        .Rs1_M(Rs1_M),
-        .Rs2_M(Rs2_M),
-        .pass_load(pass_load)
+        .JumpM(JumpM), .Rs1_M(Rs1_M), .Rs2_M(Rs2_M),
+        .pass_load(pass_load),
+        .funct3M(funct3M)
     );
 
     // ----------------------------
     // Memory stage instance
     // ----------------------------
     memory_cycle Memory (
-        .clk(clk), 
-        .rst_n(rst_n), 
-        .RegWriteM(RegWriteM),
-        .MemWriteM(MemWriteM), 
-        .ResultSrcM(ResultSrcM), 
-        .RD_M(RD_M), 
-        .PCPlus4M(PCPlus4M), 
+        .clk(clk), .rst_n(rst_n),
+        .RegWriteM(RegWriteM), .MemWriteM(MemWriteM),
+        .ResultSrcM(ResultSrcM), .RD_M(RD_M),
+        .PCPlus4M(PCPlus4M),
         .stall(StallD),
-        .WriteDataM(WriteDataM), 
-        .ALU_ResultM(ALU_ResultM), 
-        .RegWriteW(RegWriteW), 
-        .ResultSrcW(ResultSrcW), 
-        .FResultSrcM(FResultSrcM),
-        .FResultSrcW(FResultSrcW),
-        .RD_W(RDW), 
-        .PCPlus4W(PCPlus4W), 
-        .ALU_ResultW(ALU_ResultW), 
-        .ReadDataW(ReadDataW),
+        .WriteDataM(WriteDataM), .ALU_ResultM(ALU_ResultM),
+        .RegWriteW(RegWriteW), .ResultSrcW(ResultSrcW),
+        .FResultSrcM(FResultSrcM), .FResultSrcW(FResultSrcW),
+        .RD_W(RDW), .PCPlus4W(PCPlus4W),
+        .ALU_ResultW(ALU_ResultW), .ReadDataW(ReadDataW),
         .FRegWriteMW(FRegWriteMW),
-        .FPU_ResultEM(FPU_ResultEM),
-        .FPU_ResultEW(FPU_ResultEW),
+        .FPU_ResultEM(FPU_ResultEM), .FPU_ResultEW(FPU_ResultEW),
         .FRegWriteM(FRegWrite_M),
         .InstrDM(InstrDM),
         .fReadDataW(fReadDataW),
-        .DRDW(DRDW),
-        .instr(instr),
-        .counter(counter),
-        .counter_1(counter_1),
-        .pass(pass),
-        .JumpM(JumpM),
-        .JumpW(JumpW),
-        .pass_load(pass_load),
-        .w(w)
+        .DRDW(DRDW), .instr(instr),
+        .counter(counter), .counter_1(counter_1),
+        .pass(pass), .JumpM(JumpM), .JumpW(JumpW),
+        .pass_load(pass_load), .w(w),
+        .funct3M(funct3M)
     );
 
     // ----------------------------
     // Writeback stage instance
     // ----------------------------
     writeback_cycle WriteBack (
-        .ResultSrcW(ResultSrcW), 
-        .FResultSrcW(FResultSrcW),
-        .PCPlus4W(PCPlus4W), 
-        .ALU_ResultW(ALU_ResultW), 
-        .ReadDataW(ReadDataW), 
-        .ResultW(ResultW),
+        .ResultSrcW(ResultSrcW), .FResultSrcW(FResultSrcW),
+        .PCPlus4W(PCPlus4W), .ALU_ResultW(ALU_ResultW),
+        .ReadDataW(ReadDataW), .ResultW(ResultW),
         .fResultW(FResultW),
         .FPU_ResultW(FPU_ResultEW),
         .fReadDataW(fReadDataW),
@@ -274,53 +202,32 @@ module Pipeline_top1(
     // Hazard detection and forwarding unit
     // ----------------------------
     hazard_unit Forwarding_block (
-        .clk(clk),
-        .rst_n(rst_n), 
+        .clk(clk), .rst_n(rst_n),
         .RegWriteM(RegWriteM),
-        .FRegWriteM(FRegWrite_M), 
+        .FRegWriteM(FRegWrite_M),
         .RegWriteW(RegWriteW),
         .FRegWriteW(FRegWriteMW),
-        .RD_M(RD_M), 
-        .RD_W(RDW),
-        .DRD_W(DRDW),
-        .RD_E(RD_E),
-        .Rs1_E(RS1_E), 
-        .Rs2_E(RS2_E), 
+        .RD_M(RD_M), .RD_W(RDW), .DRD_W(DRDW), .RD_E(RD_E),
+        .Rs1_E(RS1_E), .Rs2_E(RS2_E),
         .ResultSrcE(ResultSrcE),
-        .ForwardAE(ForwardAE), 
-        .ForwardBE(ForwardBE),
-        .StallF(StallF),
-        .StallD(StallD),
-        .FlushE(FlushE),
-        .PCSrcE(PCSrcE),
-        .FlushD(FlushD),
-        .Rs2_D(Rs2_D),
-        .Rs1_D(Rs1_D),
-        .ResultSrcM(ResultSrcM),
-        .ResultSrcD(ResultSrcD),
-        .InstrDE(InstrDE),
-        .pass(pass),
-        .InstrD(InstrD),
-        .InstrDM(InstrDM),
-        .InstrDB(instr),
-        .counter(counter),
-        .counter_1(counter_1),
-        .is_store(is_store),
-        .counter1(counter1),
-        .is_FOP(is_FOP),
-        .finish1(finish1),
+        .ForwardAE(ForwardAE), .ForwardBE(ForwardBE),
+        .StallF(StallF), .StallD(StallD),
+        .FlushE(FlushE), .PCSrcE(PCSrcE), .FlushD(FlushD),
+        .Rs2_D(Rs2_D), .Rs1_D(Rs1_D),
+        .ResultSrcM(ResultSrcM), .ResultSrcD(ResultSrcD),
+        .InstrDE(InstrDE), .pass(pass),
+        .InstrD(InstrD), .InstrDM(InstrDM), .InstrDB(instr),
+        .counter(counter), .counter_1(counter_1),
+        .is_store(is_store), .counter1(counter1),
+        .is_FOP(is_FOP), .finish1(finish1),
         .is_store_1(is_store_1),
         .ForwardA_E_FPU(ForwardA_E_FPU),
         .ForwardB_E_FPU(ForwardB_E_FPU),
-        .JumpW(JumpW),
-        .JumpE(JumpE),
+        .JumpW(JumpW), .JumpE(JumpE),
         .regfile_en(regfile_en),
         .ResultSrcW(ResultSrcW),
-        .Rs1_M(Rs1_M),
-        .Rs2_M(Rs2_M),
-        .n(n),
-        .pass_load(pass_load),
-        .w(w),
+        .Rs1_M(Rs1_M), .Rs2_M(Rs2_M),
+        .n(n), .pass_load(pass_load), .w(w),
         .FResultSrcE(FResultSrcE)
     );
 
