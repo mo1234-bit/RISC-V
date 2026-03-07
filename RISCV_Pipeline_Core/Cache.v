@@ -119,7 +119,7 @@
     assign write2 = (fetch_write[2]) ? i_m_readdata_valid : write_set[2];
     assign write3 = (fetch_write[3]) ? i_m_readdata_valid : write_set[3];
     assign addr = (o_p_waitrequest) ? write_addr_buf[31:2] : i_p_addr[31:2]; // set module input addr is 23bit 
-    assign byte_en = (|fetch_write) ? 4'b1111 : byte_en_buf;
+    assign byte_en =  byte_en_buf;
     assign o_p_waitrequest = (state != IDLE && !m)?1:0;
    
     assign hit_num = (hit[0]) ? 0 : (hit[1]) ? 1 : (hit[2]) ? 2 : 3;
