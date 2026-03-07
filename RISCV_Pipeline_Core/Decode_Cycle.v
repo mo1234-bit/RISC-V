@@ -1,7 +1,7 @@
 module decode_cycle(
     input clk, rst_n,
     input RegWriteW, FRegWriteW,
-    input stall_f, finish, pass, FResultSrcW,
+    input stall_f, finish, pass, FResultSrcW,regfile_en,n,
     input [4:0] RDW, counter1,
     input [31:0] InstrDe, PCD, PCPlus4D, ResultW,instr,
 
@@ -84,7 +84,7 @@ module decode_cycle(
         .F_RD2(FRD2_D)
     );
     
-    wire en = (counter1 > 5'd9) ? 0 : RegWriteW;
+    wire en = (regfile_en ||n)?1:(counter1 > 5'd9 ) ? 0 : RegWriteW;
     
     Register_File rf (
         .clk(clk), .rst_n(rst_n),

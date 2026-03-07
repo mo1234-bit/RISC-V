@@ -12,7 +12,9 @@
     output reg         o_m_read, o_m_write,
     input wire [31:0] i_m_readdata,
     input wire         i_m_readdata_valid,
-    input wire         i_m_waitrequest
+    input wire         i_m_waitrequest,
+    output reg  [2:0]     state,
+    input m
 );
     parameter cache_entry = 14;
     wire [3:0]    hit;
@@ -28,11 +30,11 @@
     wire [29:0]   wb_addr0, wb_addr1, wb_addr2, wb_addr3;
     wire [1:0] 	  hit_num;
 
-    reg  [2:0] 	  state;
+    
     reg  [31:0]  writedata_buf;
     reg  [31:0]   write_addr_buf;
     reg  [3:0] 	  byte_en_buf;
-    reg 		  write_buf, read_buf;
+    reg 		  write_buf, read_buf,m_reg;
     reg  [3:0]    write_set;
     reg  [3:0]    fetch_write;
   
@@ -118,7 +120,7 @@
     assign write3 = (fetch_write[3]) ? i_m_readdata_valid : write_set[3];
     assign addr = (o_p_waitrequest) ? write_addr_buf[31:2] : i_p_addr[31:2]; // set module input addr is 23bit 
     assign byte_en = (|fetch_write) ? 4'b1111 : byte_en_buf;
-    assign o_p_waitrequest = (state != IDLE)?1:0;
+    assign o_p_waitrequest = (state != IDLE && !m)?1:0;
    
     assign hit_num = (hit[0]) ? 0 : (hit[1]) ? 1 : (hit[2]) ? 2 : 3;
     assign word_en = (|fetch_write) ? 4'b1111 : 
@@ -139,10 +141,11 @@
             fetch_write <= 0;
             o_p_readdata<=0;
             o_m_writedata<=0;
-           
+           m_reg<=0;
             state <= IDLE;
         end
         else  begin
+        m_reg<=m;
             case (state)
                 IDLE: begin
                     write_set <= 0;
@@ -152,23 +155,28 @@
                     byte_en_buf <= i_p_byte_en;
                     write_buf <= i_p_write;
                     read_buf <= i_p_read;
-                 
+                    
                     if(i_p_read ) begin
                         state <= COMP;
                     end else if(i_p_write) begin
                         state <= COMP;
                     end
+                    if(m_reg)begin
+                     if((|hit) && (read_buf||(write_buf && i_p_read) )) begin
+                         o_p_readdata <= (hit[0]) ? readdata0 : (hit[1]) ? readdata1 : (hit[2]) ? readdata2 : readdata3;
+                end
+                end 
                 end
                 COMP: begin
                     
                    
-                    if((|hit) && write_buf) begin
+                    if((|hit) && write_buf && !i_p_read) begin
                         state <= HIT;
                         write_set <= hit;
 
                     
                     end 
-                    else if((|hit) && read_buf) begin
+                    else if((|hit) && (read_buf||(write_buf && i_p_read) )) begin
                          o_p_readdata <= (hit[0]) ? readdata0 : (hit[1]) ? readdata1 : (hit[2]) ? readdata2 : readdata3;
                         o_p_readdata_valid <= 1;
                         state <= IDLE;

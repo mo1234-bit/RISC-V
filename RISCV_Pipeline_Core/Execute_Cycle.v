@@ -1,7 +1,7 @@
 module execute_cycle(
     input clk, rst_n,
     // Control signals from decode stage
-    input RegWriteE, FRegWrite_E, ALUSrcE, MemWriteE, ResultSrcE, BranchE, JumpE, FResultSrcE,
+    input RegWriteE, FRegWrite_E, ALUSrcE, MemWriteE, ResultSrcE, BranchE, JumpE, FResultSrcE,pass_load,
     input stallE,
 
     // ALU control and instruction info
@@ -23,8 +23,8 @@ module execute_cycle(
     input is_FOP, pass,
     
     // Outputs to next pipeline stage
-    output PCSrcE, RegWriteM, MemWriteM, ResultSrcM, finish, finish1,
-    output [4:0] RD_M,
+    output PCSrcE, RegWriteM, MemWriteM, ResultSrcM, finish, finish1,JumpM,
+    output [4:0] RD_M,Rs1_M,Rs2_M,
     output [31:0] PCPlus4M, WriteDataM, ALU_ResultM,
     output [31:0] PCTargetE,
     output FRegWrite_M,
@@ -53,9 +53,9 @@ module execute_cycle(
 
     // Registers to hold outputs to memory stage
     reg RegWriteE_r, MemWriteE_r, FRegWrite_E_r, ResultSrcE_r, FResultSrcE_r;
-    reg [4:0] RD_E_r;
+    reg [4:0] RD_E_r,Rs1_E_r, Rs2_E_r;
     reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r, FResultE_r, InstrDE_r;
-    reg floadE_r, fstoreE_r;
+    reg floadE_r, fstoreE_r,JumpM_r;
 
     wire stall_f_buf;
     wire [2:0] FPUControl;
@@ -221,8 +221,11 @@ module execute_cycle(
             floadE_r <= 0;
             fstoreE_r <= 0;
             InstrDE_r <= 0;
+            JumpM_r<=0;
+            Rs1_E_r<=5'd0;
+            Rs2_E_r<=5'd0;
         end
-        else if((!stallE || pass) && (!stall_f || pass)) begin
+        else if(((!stallE || pass) && (!stall_f || pass))||pass_load) begin
             RegWriteE_r <= RegWriteE; 
             MemWriteE_r <= MemWriteE; 
             ResultSrcE_r <= ResultSrcE;
@@ -239,6 +242,9 @@ module execute_cycle(
             floadE_r <= floadE;
             fstoreE_r <= fstoreE;
             InstrDE_r <= InstrDE;
+            JumpM_r<=JumpE;
+            Rs1_E_r<=InstrDE[19:15];
+            Rs2_E_r<=InstrDE[24:20];
         end
     end
 
@@ -259,5 +265,8 @@ module execute_cycle(
     assign floadM = floadE_r;
     assign fstoreM = fstoreE_r;
     assign InstrDM = InstrDE_r;
+    assign JumpM=JumpM_r;
+    assign Rs1_M=Rs1_E_r;
+    assign Rs2_M=Rs2_E_r;
 
 endmodule
