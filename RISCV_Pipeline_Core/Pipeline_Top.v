@@ -10,10 +10,10 @@ module Pipeline_top1(
     wire PCSrcE;           // Branch or Jump control from execute stage
     wire RegWriteW, RegWriteE;
     wire ALUSrcE, MemWriteE, ResultSrcE;
-    wire BranchE, JumpE;
-    wire ResultSrcR, pass_2;
+    wire BranchE, JumpE,JumpM,JumpW;
+    wire ResultSrcR, pass_2,regfile_en;
     wire RegWriteM, MemWriteM, ResultSrcM, ResultSrcW;
-    wire finish, pass, write_ready, read_ready, stall_WB, finish1;
+    wire finish, pass, write_ready, read_ready, stall_WB, finish1,n,pass_load,w;
     wire [3:0] ALUControlE;
     wire [2:0] funct3E;
     wire [6:0] OpE;
@@ -21,7 +21,7 @@ module Pipeline_top1(
     // ----------------------------
     // Register IDs and counters
     // ----------------------------
-    wire [4:0] RD_E, RD_M, RDW, Rs1_D, Rs2_D;
+    wire [4:0] RD_E, RD_M, RDW, Rs1_D, Rs2_D,Rs1_M,Rs2_M;
     wire [4:0] counter, counter_1, counter1;
 
     // ----------------------------
@@ -141,7 +141,9 @@ module Pipeline_top1(
         .pass(pass),
         .counter1(counter1),
         .mispredict(mispredict),
-        .instr(instr)
+        .instr(instr),
+        .regfile_en(regfile_en),
+        .n(n)
     );
 
     // ----------------------------
@@ -206,7 +208,11 @@ module Pipeline_top1(
         .exec_actual_taken(exec_actual_taken),
         .exec_pc(exec_pc),
         .ForwardA_E_FPU(ForwardA_E_FPU),
-        .ForwardB_E_FPU(ForwardB_E_FPU)
+        .ForwardB_E_FPU(ForwardB_E_FPU),
+        .JumpM(JumpM),
+        .Rs1_M(Rs1_M),
+        .Rs2_M(Rs2_M),
+        .pass_load(pass_load)
     );
 
     // ----------------------------
@@ -241,7 +247,11 @@ module Pipeline_top1(
         .instr(instr),
         .counter(counter),
         .counter_1(counter_1),
-        .pass(pass)
+        .pass(pass),
+        .JumpM(JumpM),
+        .JumpW(JumpW),
+        .pass_load(pass_load),
+        .w(w)
     );
 
     // ----------------------------
@@ -301,7 +311,17 @@ module Pipeline_top1(
         .finish1(finish1),
         .is_store_1(is_store_1),
         .ForwardA_E_FPU(ForwardA_E_FPU),
-        .ForwardB_E_FPU(ForwardB_E_FPU)
+        .ForwardB_E_FPU(ForwardB_E_FPU),
+        .JumpW(JumpW),
+        .JumpE(JumpE),
+        .regfile_en(regfile_en),
+        .ResultSrcW(ResultSrcW),
+        .Rs1_M(Rs1_M),
+        .Rs2_M(Rs2_M),
+        .n(n),
+        .pass_load(pass_load),
+        .w(w),
+        .FResultSrcE(FResultSrcE)
     );
 
 endmodule
