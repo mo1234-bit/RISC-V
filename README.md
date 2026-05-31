@@ -1,162 +1,181 @@
-# RISC-V Pipelined Processor with Floating-Point Unit
+# FloatCore-RV32IF — Pipelined RISC-V Processor with FPU and UVM Verification
 
-## Overview
-A fully functional 5-stage pipelined RISC-V processor implementing the RV32I base integer instruction set with the F (single-precision floating-point) extension. Features include IEEE 754 compliant floating-point operations, a 4-way set-associative cache, comprehensive hazard detection, and data forwarding mechanisms.
+## What problem does this project solve?
+
+Implementing a pipelined processor with floating-point support requires solving 
+three hard problems simultaneously: pipeline hazard correctness across integer 
+and FP instruction streams, IEEE 754 compliant arithmetic at acceptable 
+throughput, and verifying that all hazard combinations are actually exercised. 
+
+Many educational processor projects focus on only one of these dimensions. 
+This project attempts to address all three in a single integrated design: 
+microarchitecture, floating-point execution, and coverage-driven verification.
+
+
+## What was implemented?
+
+### RTL Design — FloatingCore-RV32IF
+
+A complete 5-stage RV32IF processor synthesized on Xilinx Artix-7, meeting 
+timing at 50 MHz (17K LUTs, 20K registers, 55 DSPs).
 
 <img width="1422" height="412" alt="2-Figure1-1" src="https://github.com/user-attachments/assets/1c18e7c9-3c56-41fd-90e7-634b14ddcd05" />
 
+**Pipeline stages:** Fetch → Decode → Execute → Memory → Writeback
 
-## Features 
+**Hazard detection unit** handles seven distinct hazard categories:
+- Load-use hazards (standard and late-detected)
+- Chained load hazards (consecutive dependent loads)
+- Store-after-load dependencies
+- Dual load source dependencies
+- Cache write-read conflicts
+- FPU stall forwarding across integer instructions
+- Jump-register memory dependencies
 
-✅ 5-Stage Pipeline: Fetch → Decode → Execute → Memory → Writeback
+**Floating-Point Unit** — IEEE-754-style single-precision:
+- Addition/subtraction: iterative alignment with guard/round/sticky bits
+- Multiplication: 48-bit product with normalization and rounding
+- Division: Goldschmidt algorithm with 256-entry reciprocal LUT for 
+  initial approximation — achieves 3× throughput vs. restoring division
+- Square root: Newton-Raphson refinement with 512-entry rsqrt LUT
 
-✅ RISC-V RV32I Base ISA: Complete integer instruction support
+**4-way set-associative cache:**
+- Write-back policy with dirty bit tracking
+- Parameterizable cache depth and index width.
+- State machine: IDLE → COMP → HIT/FETCH/WB with full miss handling
 
-✅ RV32F Extension: Single-precision floating-point operations
-
-✅ IEEE 754 Compliant FPU: Add, subtract, multiply, divide, square root
-
-✅ 4-Way Set-Associative Cache: Write-back policy with dirty bit tracking
-
-✅ Hazard Detection Unit: Comprehensive data hazard detection
-
-✅ Data Forwarding: Both integer and floating-point register forwarding
-
-✅ Branch Handling: Jump and branch target calculation
-
-✅ Multi-Cycle Operation Support: Synchronized stall mechanism for FPU
-
-
-### pic from simulation
-<img width="954" height="324" alt="Capture" src="https://github.com/user-attachments/assets/13f9f2ce-61b2-4f82-9b86-60e72d25504b" />
-
-## Technical Highlights
-
-Synthesizable Design: Verified on Xilinx Vivado
-
-Modular Architecture: Clean separation of concerns
-
-Parameterizable Cache: Configurable cache size and associativity
-
-Separate Register Files: Independent integer (32×32-bit) and FP (32×32-bit) register files
-
-
-## Instruction Set Support
-
-RV32I - Base Integer Instructions
-
-✅ Arithmetic: ADD, SUB, ADDI
-
-✅ Logical: AND, OR, XOR, ANDI, ORI, XORI
-
-✅ Shifts: SLL, SRL, SRA, SLLI, SRLI, SRAI
-
-✅ Comparisons: SLT, SLTU, SLTI, SLTIU
-
-✅ Branches: BEQ, BNE, BLT, BGE, BLTU, BGEU
-
-✅ Jumps: JAL, JALR
-
-✅ Loads: LW
-
-✅ Stores: SW
-
-✅ Upper Immediates: LUI, AUIPC
-
-RV32F - Single-Precision Floating-Point
-
-✅ Arithmetic: FADD.S, FSUB.S, FMUL.S, FDIV.S
-
-✅ Load/Store: FLW, FSW
-
-🧪 Testing & Verification
-Test Coverage
-
-✅ Basic arithmetic operations (integer and FP)
-
-✅ Back-to-back FP operations (dependency testing)
-
-✅ Load-use hazards (stall verification)
-
-✅ Branch/jump operations (control flow)
-
-✅ Cache hit/miss scenarios
-
-✅ Data forwarding paths (both integer and FP)
-
-✅ Multi-cycle FPU operations (stall synchronization)
-
-## Verification Methodology
-
-Unit Testing: Each module tested independently
- 
-Integration Testing: Pipeline stages tested together
-
-System Testing: Complete programs executed
-
-Corner Cases: Edge conditions verified (zero operations, denormals, etc.)
+**2-bit branch predictor:**
+- Branch Target Buffer (BTB) with 512 entries
+- Saturating counter (Strongly NT / Weakly NT / Weakly T / Strongly T)
+- Misprediction detection and pipeline flush in Execute stage
 
 ---
-# 🧩 RISC-V Test Programs
+## My contributions
 
-This repository contains a set of **RISC-V assembly test programs** covering integer, branch, jump, memory, and floating-point operations.  
+- Designed and integrated the 5-stage RV32IF pipeline datapath/control around integer and floating-point execution.
+- Implemented and debugged the hazard detection/forwarding logic for load-use, chained-load, store-after-load, cache, FPU stall, and branch recovery cases.
+- Optimized the FPU divider using Goldschmidt division and improved square-root execution using Newton-Raphson / reciprocal-square-root refinement.
+- Built the UVM verification environment, including constrained-random program generation, scoreboard models, functional coverage, and regression tests.
+- Synthesized the complete design on Artix-7 and collected utilization/timing results.
+- Some FPU modules were initially based on open-source educational implementations and were modified/optimized
+  
+### UVM Verification Environment
+
+A complete UVM testbench verifying the full RV32IF pipeline.
+
+**Constrained-random program generator** produces legal RV32IF instruction 
+streams with configurable instruction mix weights across R-type, I-type, 
+load/store, branch, FP arithmetic, and FP memory instructions. Prologue 
+seeds registers and FP memory with known values; epilogue writes a sentinel 
+for test completion detection.
+
+**Scoreboard** maintains shadow models of:
+- Integer register file (32 × 32-bit)
+- Floating-point register file (32 × 32-bit)  
+- Data memory (associative array)
+
+**7 functional covergroups:**
+
+| Covergroup | What it covers |
+|---|---|
+| cg_opcodes | All 12 opcode categories including FP load/store |
+| cg_alu_ctrl | All 10 ALU operations (ADD through SRA) |
+| cg_hazards | StallF, StallD, FPU stall with illegal-bin cross |
+| cg_branch | Taken/not-taken × mispredicted/correct |
+| cg_cache | All 7 cache FSM states |
+| cg_rd_dest | Register destination distribution across x0–x31 |
+| cg_fpu | All 7 FP operations individually |
+
+**8 named test classes:**
+
+| Test | Focus |
+|---|---|
+| riscv_smoke_test | Directed hex file, sentinel check |
+| riscv_random_test | 10 iterations of fully random programs |
+| riscv_int_alu_test | Integer-heavy mix, IPC ≥ 0.50 |
+| riscv_load_store_test | Memory-heavy mix, cache stress |
+| riscv_branch_test | Branch-heavy mix, predictor stress |
+| riscv_fpu_test | FP-heavy mix, IPC ≥ 0.08 |
+| riscv_reset_stress_test | Random mid-execution resets |
+| riscv_regression_test | All phases sequentially |
+
+---
+## Verification status
+
+- Functional coverage reached 95.2%.
+- 8 UVM test classes cover directed, random, integer-heavy, memory-heavy, branch-heavy, FPU-heavy, reset-stress, and full regression scenarios.
+- Scoreboard tracks architectural integer registers, FP registers, and data memory.
+  
+## What are the key results?
+
+| Metric | Result |
+|---|---|
+| Target frequency | 50 MHz on Artix-7 |
+| LUT utilization | 17,000 LUTs |
+| Register utilization | 20,000 registers |
+| DSP blocks | 55 |
+| FPU division throughput | 3× improvement over baseline (Goldschmidt vs restoring) |
+| Functional coverage closure | 95.2% |
+| Hazard categories handled | 7 distinct types |
+| UVM test classes | 8 |
+| Covergroups | 7 |
 
 ---
 
-<details>
-<summary><b>🧮 TEST PROGRAM  </b></summary>
+## How to run
 
-```assembly
-# Integer Operations
-00500293    addi    x5, x0, 5            # x5 = 0 + 5 = 5
-00300313    addi    x6, x0, 3            # x6 = 0 + 3 = 3
-006283B3    add     x7, x5, x6           # x7 = x5 + x6 = 8
-40628433    sub     x8, x5, x6           # x8 = x5 - x6 = 2
-0062F4B3    and     x9, x5, x6           # x9 = x5 & x6 = 0x1 (binary: 101 & 011 = 001)
-0062E533    or      x10, x5, x6          # x10 = x5 | x6 = 0x7 (binary: 101 | 011 = 111)
-0062A5B3    slt     x11, x5, x6          # x11 = (x5 < x6) ? 1 : 0 = 0 (5 not < 3)
-0032C463    blt     x5, x6, skip      # if (x5 < x6) PC = PC + 8, else continue
-06400613    addi    x12, x0, 100      # x12 = 100 (executed if branch not taken)
-00000013    nop                       # No operation
-00100693    addi    x13, x0, 1        # x13 = 1
+**Tools required:** QuestaSim (Siemens EDA), Xilinx Vivado (for synthesis)
 
-# skip:
-00500713    addi    x14, x0, 5        # x14 = 5
-00e68663    beq     x13, x14, end     # if (x13 == x14) jump to end
-0C800793    addi    x15, x0, 200      # x15 = 200
-00000013    nop                       # No operation
-020000EF    jal     x1, func          # Jump to func, save return address in x1
-0FA00893    addi    x17, x0, 250      # x17 = 250 (should be skipped)
-0080006F    j       continue          # Unconditional jump
+**Simulation — directed test:**
+```tcl
+cd FloatingCore-RV32IF
+vsim -do run.do
+```
 
-# func:
-19000913    addi    x18, x0, 400      # x18 = 400
-00008067    jalr    x0, x1, 0         # Return (jump to address in x1)
+**Simulation — UVM regression:**
+```tcl
+cd UVM
+vsim -do regress.do
+```
 
-# continue and padding
-00000013    nop
-00000013    nop
-00000013    nop
-00000013    nop
-# Memory Operations
-00500293    addi    x5, x0, 5         # x5 = 5
-00300313    addi    x6, x0, 3         # x6 = 3
-40A00397    lui     x7, 0x40A00       # x7 = 0x40A00000 (upper immediate)
-00000413    addi    x8, x0, 0         # x8 = 0 (base address)
-00742023    sw      x7, 0(x8)         # Memory[0] = x7
-40400397    lui     x7, 0x40400       # x7 = 0x40400000
-00742223    sw      x7, 4(x8)         # Memory[4] = x7
-40000397    lui     x7, 0x40000       # x7 = 0x40000000
-00742423    sw      x7, 8(x8)         # Memory[8] = x7
-00000013    nop
-00000013    nop
-# Floating-Point Operations
-00402107    flw     f2, 4(x0)         # f2 = Memory[4] (load FP value)
-00802187    flw     f3, 8(x0)         # f3 = Memory[8] (load FP value)
-00310253    fadd.s  f4, f2, f3        # f4 = f2 + f3 (FP addition)
-00208453    fsub.s  f8, f2, f3        # f8 = f2 - f3 (FP subtraction)
-082082D3    fmul.s  f5, f2, f3        # f5 = f2 * f3 (FP multiplication)
-10310353    fdiv.s  f6, f2, f3        # f6 = f2 / f3 (FP division)
-183303D3    fsqrt.s f7, f6            # f7 = sqrt(f6) (FP square root)
-</details>
+**Synthesis:**  
+Open `FloatingCore-RV32IF` in Vivado, target Artix-7 (xc7a35t), run 
+implementation. Timing constraints target 50 MHz.
 
+---
+
+## Repository structure
+RISC-V/
+├── FloatingCore-RV32IF/    # RTL design: pipeline, FPU, cache, branch predictor
+│   ├── Pipeline_Top.v      # Top-level integration
+│   ├── Hazard_unit.v       # Hazard detection and forwarding
+│   ├── FPU.v               # Floating-point unit top
+│   ├── adder.v             # IEEE 754 adder (guard/round/sticky)
+│   ├── divider.v           # Goldschmidt division with reciprocal LUT
+│   ├── multiplier.v        # IEEE 754 multiplier
+│   ├── sqrt.sv             # Newton-Raphson square root
+│   ├── Cache.v             # 4-way set-associative cache
+│   ├── branch_predictor.sv # 2-bit saturating counter BTB
+│   └── ...
+├── UVM/                    # Verification environment
+│   ├── riscv_pkg.sv        # UVM package: all components
+│   ├── riscv_coverage.sv   # 7 covergroups
+│   ├── riscv_scoreboard.sv # Shadow register/memory model
+│   ├── riscv_progrem_gen.sv# Constrained-random program generator
+│   ├── riscv_tests.sv      # 8 test classes
+│   └── ...
+└── PNR/                    # Place-and-route results
+
+---
+
+## Known limitations and future work
+
+- **LB/LH/LBU/LHU:** Sub-word load sign-extension is implemented in the 
+  memory stage but not fully verified across all alignment combinations.
+- **RV32M:** Integer multiply/divide extension not implemented.
+- **FP exceptions:** IEEE 754 exception flags (overflow, underflow, inexact) 
+  are not propagated to a CSR.
+- **Branch predictor:** BTB uses PC bits [10:2] as index — aliasing possible 
+  with large programs. A more robust tagged predictor is future work.
+- **Formal verification:** SVA properties exist for the SPI project. 
+  Applying formal methods to pipeline hazard properties is planned.
