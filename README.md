@@ -145,6 +145,7 @@ implementation. Timing constraints target 50 MHz.
 ---
 
 ## Repository structure
+```
 RISC-V/
 ├── FloatingCore-RV32IF/    # RTL design: pipeline, FPU, cache, branch predictor
 │   ├── Pipeline_Top.v      # Top-level integration
@@ -165,7 +166,7 @@ RISC-V/
 │   ├── riscv_tests.sv      # 8 test classes
 │   └── ...
 └── PNR/                    # Place-and-route results
-
+```
 ---
 
 ## Known limitations and future work
