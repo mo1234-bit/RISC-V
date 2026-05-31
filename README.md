@@ -164,8 +164,8 @@ RISC-V/
 │   ├── riscv_scoreboard.sv # Shadow register/memory model
 │   ├── riscv_progrem_gen.sv# Constrained-random program generator
 │   ├── riscv_tests.sv      # 8 test classes
-│   └── ...
-└── PNR/                    # Place-and-route results
+    └── ...
+                  
 ```
 ---
 
