@@ -305,12 +305,9 @@ RISC-V/
 ├── reports/                   # Vivado and Questa reports
 │   ├── Pipeline_top1_utilization_synth.rpt
 │   ├── timing_report.txt
-│   └── coverage_merged_rpt.txt
-│
-└── PNR/                       # Place-and-route files/results
-```
+    └── coverage_merged_rpt.txt
 
-> If the actual filename is still `riscv_progrem_gen.sv`, consider renaming it to `riscv_program_gen.sv` for professionalism.
+```
 
 ---
 
@@ -328,7 +325,7 @@ RISC-V/
 
 The optimized FPU used in this processor is documented separately:
 
-https://github.com/mo1234-bit/Floating-Point-Unit-FPU-
+[https://github.com/mo1234-bit/Floating-Point-Unit-FPU-](https://github.com/mo1234-bit/FloatCore-FPU)
 
 ---
 
