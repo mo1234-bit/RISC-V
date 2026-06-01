@@ -1,0 +1,1910 @@
+Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2018.2 (win64) Build 2258646 Thu Jun 14 20:03:12 MDT 2018
+| Date         : Mon Jun  1 21:16:30 2026
+| Host         : LAPTOP-G8FFK8LG running 64-bit major release  (build 9200)
+| Command      : report_timing -delay_type min_max -max_paths 10 -sort_by group -input_pins -routable_nets -name timing_2 -file {C:/games setup/Digital ic/Projects/RISCV_Pipeline_Core/pipe/timing_report.txt}
+| Design       : Pipeline_top1
+| Device       : 7a35ti-cpg236
+| Speed File   : -1L  PRODUCTION 1.22 2018-03-21
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[6]_rep/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.554ns  (logic 4.574ns (21.221%)  route 16.980ns (78.779%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    23.932 r  Fetch/bp/PC_reg[5]_i_1/O[1]
+                         net (fo=7, unplaced)         0.560    24.492    Fetch/Program_Counter/correct_target_reg[8][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.246    24.512    Fetch/Program_Counter/PC_reg[6]_rep
+  -------------------------------------------------------------------
+                         required time                         24.512    
+                         arrival time                         -24.492    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[6]_rep__0/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.554ns  (logic 4.574ns (21.221%)  route 16.980ns (78.779%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    23.932 r  Fetch/bp/PC_reg[5]_i_1/O[1]
+                         net (fo=7, unplaced)         0.560    24.492    Fetch/Program_Counter/correct_target_reg[8][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__0/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__0/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.246    24.512    Fetch/Program_Counter/PC_reg[6]_rep__0
+  -------------------------------------------------------------------
+                         required time                         24.512    
+                         arrival time                         -24.492    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[6]_rep__1/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.554ns  (logic 4.574ns (21.221%)  route 16.980ns (78.779%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    23.932 r  Fetch/bp/PC_reg[5]_i_1/O[1]
+                         net (fo=7, unplaced)         0.560    24.492    Fetch/Program_Counter/correct_target_reg[8][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__1/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__1/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.246    24.512    Fetch/Program_Counter/PC_reg[6]_rep__1
+  -------------------------------------------------------------------
+                         required time                         24.512    
+                         arrival time                         -24.492    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[6]_rep__2/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.554ns  (logic 4.574ns (21.221%)  route 16.980ns (78.779%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    23.932 r  Fetch/bp/PC_reg[5]_i_1/O[1]
+                         net (fo=7, unplaced)         0.560    24.492    Fetch/Program_Counter/correct_target_reg[8][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__2/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__2/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.246    24.512    Fetch/Program_Counter/PC_reg[6]_rep__2
+  -------------------------------------------------------------------
+                         required time                         24.512    
+                         arrival time                         -24.492    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[6]_rep__3/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.554ns  (logic 4.574ns (21.221%)  route 16.980ns (78.779%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    23.932 r  Fetch/bp/PC_reg[5]_i_1/O[1]
+                         net (fo=7, unplaced)         0.560    24.492    Fetch/Program_Counter/correct_target_reg[8][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__3/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__3/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.246    24.512    Fetch/Program_Counter/PC_reg[6]_rep__3
+  -------------------------------------------------------------------
+                         required time                         24.512    
+                         arrival time                         -24.492    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+Slack (MET) :             0.020ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[6]_rep__4/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.554ns  (logic 4.574ns (21.221%)  route 16.980ns (78.779%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    23.932 r  Fetch/bp/PC_reg[5]_i_1/O[1]
+                         net (fo=7, unplaced)         0.560    24.492    Fetch/Program_Counter/correct_target_reg[8][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__4/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[6]_rep__4/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.246    24.512    Fetch/Program_Counter/PC_reg[6]_rep__4
+  -------------------------------------------------------------------
+                         required time                         24.512    
+                         arrival time                         -24.492    
+  -------------------------------------------------------------------
+                         slack                                  0.020    
+
+Slack (MET) :             0.054ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[8]_rep/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.519ns  (logic 4.555ns (21.167%)  route 16.964ns (78.833%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    23.913 r  Fetch/bp/PC_reg[5]_i_1/O[3]
+                         net (fo=4, unplaced)         0.544    24.457    Fetch/Program_Counter/correct_target_reg[8][3]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[8]_rep/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[8]_rep/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.247    24.511    Fetch/Program_Counter/PC_reg[8]_rep
+  -------------------------------------------------------------------
+                         required time                         24.511    
+                         arrival time                         -24.457    
+  -------------------------------------------------------------------
+                         slack                                  0.054    
+
+Slack (MET) :             0.054ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[8]_rep__0/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.519ns  (logic 4.555ns (21.167%)  route 16.964ns (78.833%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    23.913 r  Fetch/bp/PC_reg[5]_i_1/O[3]
+                         net (fo=4, unplaced)         0.544    24.457    Fetch/Program_Counter/correct_target_reg[8][3]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[8]_rep__0/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[8]_rep__0/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.247    24.511    Fetch/Program_Counter/PC_reg[8]_rep__0
+  -------------------------------------------------------------------
+                         required time                         24.511    
+                         arrival time                         -24.457    
+  -------------------------------------------------------------------
+                         slack                                  0.054    
+
+Slack (MET) :             0.054ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[8]_rep__1/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.519ns  (logic 4.555ns (21.167%)  route 16.964ns (78.833%))
+  Logic Levels:           24  (CARRY4=2 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[3])
+                                                      0.329    23.913 r  Fetch/bp/PC_reg[5]_i_1/O[3]
+                         net (fo=4, unplaced)         0.544    24.457    Fetch/Program_Counter/correct_target_reg[8][3]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[8]_rep__1/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[8]_rep__1/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)       -0.247    24.511    Fetch/Program_Counter/PC_reg[8]_rep__1
+  -------------------------------------------------------------------
+                         required time                         24.511    
+                         arrival time                         -24.457    
+  -------------------------------------------------------------------
+                         slack                                  0.054    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_0_0/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[0]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_0_0/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_0_0/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_0_0/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_0_0/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_0_0/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[10]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_10_10/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[10]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[10]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_10_10/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_10_10/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_10_10/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_10_10/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_10_10/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[11]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_11_11/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[11]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[11]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_11_11/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_11_11/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_11_11/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_11_11/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_11_11/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[12]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_12_12/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[12]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[12]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_12_12/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_12_12/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_12_12/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_12_12/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_12_12/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[13]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_13_13/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[13]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[13]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_13_13/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_13_13/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_13_13/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_13_13/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_13_13/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[14]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_14_14/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[14]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[14]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_14_14/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_14_14/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_14_14/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_14_14/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_14_14/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[15]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_15_15/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[15]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[15]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_15_15/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_15_15/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_15_15/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_15_15/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_15_15/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[16]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_16_16/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[16]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[16]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_16_16/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_16_16/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_16_16/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_16_16/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_16_16/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[17]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_17_17/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[17]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[17]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_17_17/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_17_17/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_17_17/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_17_17/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_17_17/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.087ns  (arrival time - required time)
+  Source:                 Memory/dut/o_m_writedata_reg[18]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Memory/dmem/mem_reg_0_255_18_18/RAMS64E_A/I
+                            (rising edge-triggered cell RAMS64E clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (sys_clk_pin rise@0.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        0.326ns  (logic 0.141ns (43.301%)  route 0.185ns (56.699%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.057ns
+    Source Clock Delay      (SCD):    0.704ns
+    Clock Pessimism Removal (CPR):    0.208ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.226     0.226 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.337     0.564    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.026     0.590 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.114     0.704    Memory/dut/clk_IBUF_BUFG
+                         FDRE                                         r  Memory/dut/o_m_writedata_reg[18]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.141     0.845 r  Memory/dut/o_m_writedata_reg[18]/Q
+                         net (fo=16, unplaced)        0.185     1.029    Memory/dmem/mem_reg_0_255_18_18/D
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_18_18/RAMS64E_A/I
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         0.414     0.414 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.355     0.769    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.029     0.798 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.259     1.057    Memory/dmem/mem_reg_0_255_18_18/WCLK
+                         RAMS64E                                      r  Memory/dmem/mem_reg_0_255_18_18/RAMS64E_A/CLK
+                         clock pessimism             -0.208     0.849    
+                         RAMS64E (Hold_rams64e_CLK_I)
+                                                      0.094     0.943    Memory/dmem/mem_reg_0_255_18_18/RAMS64E_A
+  -------------------------------------------------------------------
+                         required time                         -0.943    
+                         arrival time                           1.029    
+  -------------------------------------------------------------------
+                         slack                                  0.087    
+
+Slack (MET) :             0.204ns  (required time - arrival time)
+  Source:                 Decode/RS1_D_r_reg[0]/C
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Destination:            Fetch/Program_Counter/PC_reg[30]/D
+                            (rising edge-triggered cell FDRE clocked by sys_clk_pin  {rise@0.000ns fall@10.000ns period=22.000ns})
+  Path Group:             sys_clk_pin
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            22.000ns  (sys_clk_pin rise@22.000ns - sys_clk_pin rise@0.000ns)
+  Data Path Delay:        21.678ns  (logic 5.258ns (24.255%)  route 16.420ns (75.745%))
+  Logic Levels:           30  (CARRY4=8 LUT3=1 LUT4=2 LUT5=4 LUT6=14 MUXF7=1)
+  Clock Path Skew:        -0.145ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.678ns = ( 24.678 - 22.000 ) 
+    Source Clock Delay      (SCD):    2.938ns
+    Clock Pessimism Removal (CPR):    0.115ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock sys_clk_pin rise edge)
+                                                      0.000     0.000 r  
+    W5                                                0.000     0.000 r  clk (IN)
+                         net (fo=0)                   0.000     0.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.458     1.458 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.800     2.258    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.096     2.354 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.584     2.938    Decode/clk_IBUF_BUFG
+                         FDRE                                         r  Decode/RS1_D_r_reg[0]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_fdre_C_Q)         0.456     3.394 r  Decode/RS1_D_r_reg[0]/Q
+                         net (fo=6, unplaced)         0.997     4.391    Decode/counter1_reg[0][0]
+                                                                      r  Decode/counter1[4]_i_12/I0
+                         LUT6 (Prop_lut6_I0_O)        0.295     4.686 f  Decode/counter1[4]_i_12/O
+                         net (fo=2, unplaced)         0.913     5.599    Memory/RS1_D_r_reg[0]
+                                                                      f  Memory/ResultE_r[29]_i_104/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     5.723 f  Memory/ResultE_r[29]_i_104/O
+                         net (fo=1, unplaced)         1.111     6.834    Memory/ResultE_r[29]_i_104_n_0
+                                                                      f  Memory/ResultE_r[29]_i_73/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     6.958 r  Memory/ResultE_r[29]_i_73/O
+                         net (fo=32, unplaced)        0.520     7.478    Memory/ResultE_r[29]_i_73_n_0
+                                                                      r  Memory/ResultE_r[29]_i_45/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124     7.602 r  Memory/ResultE_r[29]_i_45/O
+                         net (fo=3, unplaced)         0.920     8.522    Decode/Src_A_ALU[2]
+                                                                      r  Decode/ResultE_r[29]_i_28/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124     8.646 r  Decode/ResultE_r[29]_i_28/O
+                         net (fo=4, unplaced)         1.135     9.781    Decode/ResultE_r[29]_i_28_n_0
+                                                                      r  Decode/ResultE_r[25]_i_15/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124     9.905 r  Decode/ResultE_r[25]_i_15/O
+                         net (fo=4, unplaced)         0.926    10.831    Decode/ResultE_r[25]_i_15_n_0
+                                                                      r  Decode/ResultE_r[23]_i_21/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    10.955 r  Decode/ResultE_r[23]_i_21/O
+                         net (fo=1, unplaced)         0.902    11.857    Decode/Execute/alu/data0__0[23]
+                                                                      r  Decode/ResultE_r[23]_i_11/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    11.981 r  Decode/ResultE_r[23]_i_11/O
+                         net (fo=1, unplaced)         0.000    11.981    Decode/ResultE_r[23]_i_11_n_0
+                                                                      r  Decode/ResultE_r_reg[23]_i_6/I1
+                         MUXF7 (Prop_muxf7_I1_O)      0.245    12.226 r  Decode/ResultE_r_reg[23]_i_6/O
+                         net (fo=1, unplaced)         0.422    12.648    Decode/ResultE_r_reg[23]_i_6_n_0
+                                                                      r  Decode/ResultE_r[23]_i_4/I2
+                         LUT3 (Prop_lut3_I2_O)        0.324    12.972 r  Decode/ResultE_r[23]_i_4/O
+                         net (fo=2, unplaced)         0.430    13.402    Decode/Execute/ResultE[23]
+                                                                      r  Decode/correct_target[31]_i_19/I2
+                         LUT4 (Prop_lut4_I2_O)        0.124    13.526 r  Decode/correct_target[31]_i_19/O
+                         net (fo=1, unplaced)         1.111    14.637    Decode/correct_target[31]_i_19_n_0
+                                                                      r  Decode/correct_target[31]_i_6/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    14.761 r  Decode/correct_target[31]_i_6/O
+                         net (fo=1, unplaced)         0.419    15.180    Decode/correct_target[31]_i_6_n_0
+                                                                      r  Decode/correct_target[31]_i_3/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    15.304 f  Decode/correct_target[31]_i_3/O
+                         net (fo=79, unplaced)        0.543    15.847    Decode/exec_actual_taken
+                                                                      f  Decode/RS1_D_r[3]_i_1/I3
+                         LUT5 (Prop_lut5_I3_O)        0.124    15.971 r  Decode/RS1_D_r[3]_i_1/O
+                         net (fo=40, unplaced)        0.979    16.950    Decode/Rs1_D[3]
+                                                                      r  Decode/RegWriteM_r0_i_16/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    17.074 r  Decode/RegWriteM_r0_i_16/O
+                         net (fo=1, unplaced)         0.902    17.976    Memory/flip3/out_reg[3]_0
+                                                                      r  Memory/flip3/RegWriteM_r0_i_9/I2
+                         LUT6 (Prop_lut6_I2_O)        0.124    18.100 r  Memory/flip3/RegWriteM_r0_i_9/O
+                         net (fo=5, unplaced)         0.930    19.030    Decode/out_reg[3]
+                                                                      r  Decode/RegWriteM_r0_i_3/I1
+                         LUT6 (Prop_lut6_I1_O)        0.124    19.154 f  Decode/RegWriteM_r0_i_3/O
+                         net (fo=5, unplaced)         1.139    20.293    Decode/pass_load
+                                                                      f  Decode/btb_target[335][31]_i_4/I0
+                         LUT6 (Prop_lut6_I0_O)        0.124    20.417 f  Decode/btb_target[335][31]_i_4/O
+                         net (fo=79, unplaced)        0.543    20.960    Fetch/bp/StallF
+                                                                      f  Fetch/bp/PC[0]_i_5/I1
+                         LUT5 (Prop_lut5_I1_O)        0.124    21.084 f  Fetch/bp/PC[0]_i_5/O
+                         net (fo=33, unplaced)        0.521    21.605    Fetch/bp/PC[0]_i_5_n_0
+                                                                      f  Fetch/bp/PC[0]_i_7/I0
+                         LUT4 (Prop_lut4_I0_O)        0.124    21.729 r  Fetch/bp/PC[0]_i_7/O
+                         net (fo=33, unplaced)        0.521    22.250    Decode/predict_taken
+                                                                      r  Decode/PC[0]_i_4/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    22.374 r  Decode/PC[0]_i_4/O
+                         net (fo=42, unplaced)        0.527    22.901    Fetch/bp/s0
+                                                                      r  Fetch/bp/PC[1]_i_5/I4
+                         LUT5 (Prop_lut5_I4_O)        0.124    23.025 r  Fetch/bp/PC[1]_i_5/O
+                         net (fo=1, unplaced)         0.000    23.025    Fetch/bp/PC[1]_i_5_n_0
+                                                                      r  Fetch/bp/PC_reg[1]_i_1/S[1]
+                         CARRY4 (Prop_carry4_S[1]_CO[3])
+                                                      0.550    23.575 r  Fetch/bp/PC_reg[1]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.009    23.584    Fetch/bp/PC_reg[1]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[5]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    23.698 r  Fetch/bp/PC_reg[5]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000    23.698    Fetch/bp/PC_reg[5]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[9]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    23.812 r  Fetch/bp/PC_reg[9]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000    23.812    Fetch/bp/PC_reg[9]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[13]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    23.926 r  Fetch/bp/PC_reg[13]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000    23.926    Fetch/bp/PC_reg[13]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[17]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    24.040 r  Fetch/bp/PC_reg[17]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000    24.040    Fetch/bp/PC_reg[17]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[21]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    24.154 r  Fetch/bp/PC_reg[21]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000    24.154    Fetch/bp/PC_reg[21]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[25]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_CO[3])
+                                                      0.114    24.268 r  Fetch/bp/PC_reg[25]_i_1/CO[3]
+                         net (fo=1, unplaced)         0.000    24.268    Fetch/bp/PC_reg[25]_i_1_n_0
+                                                                      r  Fetch/bp/PC_reg[29]_i_1/CI
+                         CARRY4 (Prop_carry4_CI_O[1])
+                                                      0.348    24.616 r  Fetch/bp/PC_reg[29]_i_1/O[1]
+                         net (fo=1, unplaced)         0.000    24.616    Fetch/Program_Counter/correct_target_reg[31][1]
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[30]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock sys_clk_pin rise edge)
+                                                     22.000    22.000 r  
+    W5                                                0.000    22.000 r  clk (IN)
+                         net (fo=0)                   0.000    22.000    clk
+    W5                                                                r  clk_IBUF_inst/I
+    W5                   IBUF (Prop_ibuf_I_O)         1.388    23.388 r  clk_IBUF_inst/O
+                         net (fo=1, unplaced)         0.760    24.148    clk_IBUF
+                                                                      r  clk_IBUF_BUFG_inst/I
+                         BUFG (Prop_bufg_I_O)         0.091    24.239 r  clk_IBUF_BUFG_inst/O
+                         net (fo=22145, unplaced)     0.439    24.678    Fetch/Program_Counter/clk_IBUF_BUFG
+                         FDRE                                         r  Fetch/Program_Counter/PC_reg[30]/C
+                         clock pessimism              0.115    24.793    
+                         clock uncertainty           -0.035    24.758    
+                         FDRE (Setup_fdre_C_D)        0.062    24.820    Fetch/Program_Counter/PC_reg[30]
+  -------------------------------------------------------------------
+                         required time                         24.820    
+                         arrival time                         -24.616    
+  -------------------------------------------------------------------
+                         slack                                  0.204    
+
+
+
+
