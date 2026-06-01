@@ -6,6 +6,15 @@ FloatCore-RV32IF is a custom 5-stage RISC-V processor implementing the RV32I bas
 
 A pipelined processor with floating-point support must handle several interacting correctness challenges: integer/FP pipeline hazards, multi-cycle FPU stalls, cache and memory dependencies, branch misprediction recovery, and floating-point result correctness. This project addresses these challenges in an integrated processor design and verifies them using coverage-driven UVM tests.
 
+## My contributions
+
+- Designed and integrated the 5-stage RV32IF pipeline datapath/control around integer and floating-point execution.
+- Implemented and debugged the hazard detection/forwarding logic for load-use, chained-load, store-after-load, cache, FPU stall, and branch recovery cases.
+- Optimized the FPU divider using Goldschmidt division and improved square-root execution using Newton-Raphson / reciprocal-square-root refinement.
+- Built the UVM verification environment, including constrained-random program generation, scoreboard models, functional coverage, and regression tests.
+- Synthesized the complete design on Artix-7 and collected utilization/timing results.
+- Some FPU modules were initially based on open-source educational implementations and were modified/optimized
+  
 ## What was implemented?
 
 ### RTL Design — FloatingCore-RV32IF
@@ -44,15 +53,7 @@ timing at 50 MHz (17K LUTs, 20K registers, 55 DSPs).
 - Misprediction detection and pipeline flush in Execute stage
 
 ---
-## My contributions
 
-- Designed and integrated the 5-stage RV32IF pipeline datapath/control around integer and floating-point execution.
-- Implemented and debugged the hazard detection/forwarding logic for load-use, chained-load, store-after-load, cache, FPU stall, and branch recovery cases.
-- Optimized the FPU divider using Goldschmidt division and improved square-root execution using Newton-Raphson / reciprocal-square-root refinement.
-- Built the UVM verification environment, including constrained-random program generation, scoreboard models, functional coverage, and regression tests.
-- Synthesized the complete design on Artix-7 and collected utilization/timing results.
-- Some FPU modules were initially based on open-source educational implementations and were modified/optimized
-  
 ### UVM Verification Environment
 
 A complete UVM testbench verifying the full RV32IF pipeline.
