@@ -1,16 +1,10 @@
 # FloatCore-RV32IF — Pipelined RISC-V Processor with FPU and UVM Verification
 
+FloatCore-RV32IF is a custom 5-stage RISC-V processor implementing the RV32I base ISA with single-precision floating-point support. The project combines RTL microarchitecture, floating-point arithmetic optimization, FPGA synthesis, and a UVM verification environment with constrained-random program generation, scoreboarding, functional coverage, and regression tests.
+
 ## What problem does this project solve?
 
-Implementing a pipelined processor with floating-point support requires solving 
-three hard problems simultaneously: pipeline hazard correctness across integer 
-and FP instruction streams, IEEE 754 compliant arithmetic at acceptable 
-throughput, and verifying that all hazard combinations are actually exercised. 
-
-Many educational processor projects focus on only one of these dimensions. 
-This project attempts to address all three in a single integrated design: 
-microarchitecture, floating-point execution, and coverage-driven verification.
-
+A pipelined processor with floating-point support must handle several interacting correctness challenges: integer/FP pipeline hazards, multi-cycle FPU stalls, cache and memory dependencies, branch misprediction recovery, and floating-point result correctness. This project addresses these challenges in an integrated processor design and verifies them using coverage-driven UVM tests.
 
 ## What was implemented?
 
