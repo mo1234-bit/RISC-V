@@ -325,7 +325,7 @@ RISC-V/
 
 The optimized FPU used in this processor is documented separately:
 
-[https://github.com/mo1234-bit/Floating-Point-Unit-FPU-](https://github.com/mo1234-bit/FloatCore-FPU)
+[Floating-Point-Unit](https://github.com/mo1234-bit/FloatCore-FPU)
 
 ---
 
