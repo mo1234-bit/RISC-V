@@ -105,7 +105,17 @@ for test completion detection.
 - Functional coverage reached 95.2%.
 - 8 UVM test classes cover directed, random, integer-heavy, memory-heavy, branch-heavy, FPU-heavy, reset-stress, and full regression scenarios.
 - Scoreboard tracks architectural integer registers, FP registers, and data memory.
-  
+
+## Bugs found
+  During verification, several hazard cases were identified and fixed, including:
+- chained load dependencies,
+- store-after-load forwarding cases,
+- jump-register memory dependency,
+- FPU stall interaction with integer pipeline forwarding,
+- branch misprediction flush interactions.
+
+These cases are now covered by directed and constrained-random tests.
+
 ## What are the key results?
 
 | Metric | Result |
