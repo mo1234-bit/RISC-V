@@ -111,8 +111,8 @@ for test completion detection.
 | Metric | Result |
 |---|---|
 | Target frequency | 50 MHz on Artix-7 |
-| LUT utilization | 17,000 LUTs |
-| Register utilization | 20,000 registers |
+| LUT utilization |18,219 LUTs |
+| Register utilization | 21,044 registers |
 | DSP blocks | 55 |
 | FPU division throughput | 3× improvement over baseline (Goldschmidt vs restoring) |
 | Functional coverage closure | 95.2% |
