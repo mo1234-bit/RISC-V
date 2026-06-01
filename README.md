@@ -144,6 +144,12 @@ implementation. Timing constraints target 50 MHz.
 
 ---
 
+## Reports:
+- Vivado utilization report: `reports/Pipeline_top1_utilization_synth.rpt`
+- Vivado timing report: `reports/timing_report.txt`
+- Questa coverage report: `reports/coverage_merged_rpt.txt`
+
+
 ## Repository structure
 ```
 RISC-V/
