@@ -139,6 +139,7 @@ A complete UVM testbench verifies the full RV32IF pipeline.
 
 <img width="631" height="741" alt="Untitled Diagram drawio (1)" src="https://github.com/user-attachments/assets/5ab395b9-9278-4bdc-9c90-dbebaa0d3951" />
 
+The UVM environment drives randomized instruction programs into the processor, monitors architectural state, compares against scoreboard models, and collects coverage across opcodes, hazards, cache states, branch outcomes, and FPU operations.
 
 ### Constrained-Random Program Generator
 
