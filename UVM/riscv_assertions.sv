@@ -1,20 +1,3 @@
-// =============================================================================
-// riscv_assertions.sv  –  Formal / Simulation Assertions for RISC-V Pipeline
-//
-// Bound to Pipeline_top1 via bind statement in tb_top.sv.
-// Covers:
-//   1.  Reset behaviour
-//   2.  Hazard unit  (stall / flush mutual exclusion and response)
-//   3.  Register file (x0 always zero, write-back validity)
-//   4.  Pipeline forwarding (no unknown data enters WB)
-//   5.  Branch predictor (mispredict → flush timing)
-//   6.  Memory stage (MemWrite exclusivity, address alignment)
-//   7.  FPU (result valid after latency, no X propagation)
-//   8.  Cache (legal FSM state, stall acknowledgement)
-//   9.  PC (monotone or branch/stall, no X)
-//  10.  Liveness (pipeline must eventually produce a result)
-// =============================================================================
-
 module riscv_pipeline_assertions (
     // Primary ports
     input  logic        clk,
