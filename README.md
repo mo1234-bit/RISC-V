@@ -200,6 +200,17 @@ Functional coverage reached **95.2%** across seven covergroups.
 
 ---
 
+## SystemVerilog Assertions
+
+Implemented 30+ SVA properties covering:
+
+- PC progression
+- Cache timeout behavior
+- Memory alignment
+- FPU stall limits
+- Pipeline liveness
+- Reset correctness
+
 ## Verification Status
 
 - Functional coverage reached 95.2%.
