@@ -204,7 +204,7 @@ Functional coverage reached **95.2%** across seven covergroups.
 
 ## SystemVerilog Assertions
 
-Implemented 30+ SVA properties covering:
+Implemented 30+ simulation SVA properties covering:
 
 - PC progression
 - Cache timeout behavior
@@ -212,7 +212,8 @@ Implemented 30+ SVA properties covering:
 - FPU stall limits
 - Pipeline liveness
 - Reset correctness
-  These assertions were used during simulation-based verification. Formal proof of pipeline hazard properties is planned as future work.
+
+These assertions were used during simulation-based verification. Formal proof of pipeline hazard properties is planned as future work.
 
   ---
   
@@ -248,7 +249,7 @@ These cases are now covered by directed and constrained-random tests.
 | LUT utilization | 18,219 LUTs |
 | Register utilization | 21,044 registers |
 | DSP blocks | 55 |
-| FPU division throughput | 3× improvement over restoring baseline |
+| Integrated FPU division speedup | ~3× improvement over restoring |
 | Functional coverage closure | 95.2% |
 | Hazard categories handled | 7 |
 | UVM test classes | 8 |
