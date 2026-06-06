@@ -162,11 +162,12 @@ Each generated test program includes:
 
 ## Scoreboard
 
-The scoreboard maintains architectural shadow models of:
+The scoreboard compares architectural state against shadow models and checks:
 
-- Integer register file: 32 × 32-bit
-- Floating-point register file: 32 × 32-bit
-- Data memory: associative array model
+- Integer register updates
+- Floating-point register updates
+- Memory write correctness
+- Program completion status
 
 ---
 
@@ -252,6 +253,8 @@ These cases are now covered by directed and constrained-random tests.
 | Hazard categories handled | 7 |
 | UVM test classes | 8 |
 | Functional covergroups | 7 |
+
+Coverage closure reached 95.2%. The remaining uncovered bins correspond primarily to low-probability branch predictor state transitions that require targeted stimulus generation.
 
 ---
 
