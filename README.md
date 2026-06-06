@@ -210,7 +210,10 @@ Implemented 30+ SVA properties covering:
 - FPU stall limits
 - Pipeline liveness
 - Reset correctness
+  These assertions were used during simulation-based verification. Formal proof of pipeline hazard properties is planned as future work.
 
+  ---
+  
 ## Verification Status
 
 - Functional coverage reached 95.2%.
