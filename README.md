@@ -137,6 +137,9 @@ The branch predictor uses a 2-bit saturating counter and BTB.
 
 A complete UVM testbench verifies the full RV32IF pipeline.
 
+<img width="631" height="741" alt="Untitled Diagram drawio (1)" src="https://github.com/user-attachments/assets/5ab395b9-9278-4bdc-9c90-dbebaa0d3951" />
+
+
 ### Constrained-Random Program Generator
 
 The constrained-random generator produces legal RV32IF instruction streams with configurable instruction-mix weights across:
